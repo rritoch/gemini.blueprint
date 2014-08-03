@@ -29,8 +29,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Spring version -->
-        <spring.maven.artifact.version>3.1.1.RELEASE</spring.maven.artifact.version>
-        <spring.base.version>3.0.0</spring.base.version>
+        <spring.maven.artifact.version>4.0.5.RELEASE_1</spring.maven.artifact.version>
+        <spring.base.version>4.0.0</spring.base.version>
 
         <symName.prefix>org.eclipse.gemini.blueprint</symName.prefix>
         <spring.osgi.symbolic.name>${project.groupId}.${project.artifactId}</spring.osgi.symbolic.name>
@@ -69,7 +69,7 @@
         <!-- bundlor settings -->
         <bundlor.enabled>true</bundlor.enabled>
         <!-- common version ranges -->
-        <spring.version.range.nq>[${spring.base.version},4.0)</spring.version.range.nq>
+        <spring.version.range.nq>[${spring.base.version},5.0)</spring.version.range.nq>
         <spring.version.range>"${spring.version.range.nq}"</spring.version.range>
         <gemini.blueprint.version.range.nq>[${project.version},${project.version}]</gemini.blueprint.version.range.nq>
         <gemini.blueprint.version.range>"${gemini.blueprint.version.range.nq}"</gemini.blueprint.version.range>
@@ -214,75 +214,34 @@
 
             <!-- Spring -->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>org.springframework.aop</artifactId>
-                <version>${spring.maven.artifact.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
+                <version>4.0.5.RELEASE_1</version>
             </dependency>
-
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>org.springframework.beans</artifactId>
-                <version>${spring.maven.artifact.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
+                <version>4.0.5.RELEASE_1</version>
             </dependency>
-
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>org.springframework.core</artifactId>
-                <version>${spring.maven.artifact.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+                <version>4.0.5.RELEASE_1</version>
             </dependency>
-
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>org.springframework.context</artifactId>
-                <version>${spring.maven.artifact.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
+                <version>4.0.5.RELEASE_1</version>
             </dependency>
-
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>org.springframework.expression</artifactId>
-                <version>${spring.maven.artifact.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
+                <version>4.0.5.RELEASE_1</version>
             </dependency>
-
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>org.springframework.test</artifactId>
-                <version>${spring.maven.artifact.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-test</artifactId>
+                <version>4.0.5.RELEASE_1</version>
             </dependency>
 
             <dependency>
@@ -870,6 +829,128 @@
     <!-- to use these profiles invoke maven with -Pprofile-name, e.g. -->
     <!-- mvn -Pfelix test                                             -->
     <profiles>
+        <profile>
+            <id>spring-3</id>
+            <properties>
+                <spring.maven.artifact.version>3.1.1.RELEASE</spring.maven.artifact.version>
+                <spring.base.version>3.0.0</spring.base.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.aop</artifactId>
+                    <version>${spring.maven.artifact.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.commons</groupId>
+                            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.beans</artifactId>
+                    <version>${spring.maven.artifact.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.commons</groupId>
+                            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.core</artifactId>
+                    <version>${spring.maven.artifact.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.commons</groupId>
+                            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.context</artifactId>
+                    <version>${spring.maven.artifact.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.commons</groupId>
+                            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.expression</artifactId>
+                    <version>${spring.maven.artifact.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.commons</groupId>
+                            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.test</artifactId>
+                    <version>${spring.maven.artifact.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.commons</groupId>
+                            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>spring-4</id>
+            <properties>
+                <spring.maven.artifact.version>4.0.5.RELEASE_1</spring.maven.artifact.version>
+                <spring.base.version>4.0.0</spring.base.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.servicemix.bundles</groupId>
+                    <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
+                    <version>4.0.5.RELEASE_1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.servicemix.bundles</groupId>
+                    <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
+                    <version>4.0.5.RELEASE_1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.servicemix.bundles</groupId>
+                    <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+                    <version>4.0.5.RELEASE_1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.servicemix.bundles</groupId>
+                    <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
+                    <version>4.0.5.RELEASE_1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.servicemix.bundles</groupId>
+                    <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
+                    <version>4.0.5.RELEASE_1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.servicemix.bundles</groupId>
+                    <artifactId>org.apache.servicemix.bundles.spring-test</artifactId>
+                    <version>4.0.5.RELEASE_1</version>
+                </dependency>
+
+            </dependencies>
+        </profile>
         <profile>
             <id>equinox</id>
             <dependencies>

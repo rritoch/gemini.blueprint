@@ -16,8 +16,7 @@ Import-Template:
  org.springframework.*;version=${spring.version.range},
  *;resolution:=optional
 Bundle-Activator: org.eclipse.gemini.blueprint.extender.internal.boot.ChainActivator
-Export-Package:
- org.osgi.service.blueprint;version=1;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect"
+Export-Package: org.osgi.service.blueprint;version=1;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect"
 Bundle-Name: ${project.artifactId}
 Bundle-Version: ${project.version}
 Bundle-SymbolicName: ${spring.osgi.symbolic.name}

@@ -166,23 +166,9 @@ public abstract class AbstractOsgiServiceImportFactoryBean implements FactoryBea
 
 	/**
 	 * Sets the thread context class loader management strategy to use for services imported by this service. By default
-	 * {@link ImportContextClassLoader#CLIENT} is used.
-	 * 
-	 * @param contextClassLoader import context class loader management strategy
-	 * @see ImportContextClassLoader
-	 * @deprecated As of Spring DM 2.0, replaced by {@link #setImportContextClassLoader(ImportContextClassLoaderEnum))}
-	 */
-	public void setContextClassLoader(ImportContextClassLoader contextClassLoader) {
-		Assert.notNull(contextClassLoader);
-		this.contextClassLoader = contextClassLoader.getImportContextClassLoaderEnum();
-	}
-
-	/**
-	 * Sets the thread context class loader management strategy to use for services imported by this service. By default
 	 * {@link ImportContextClassLoaderEnum#CLIENT} is used.
 	 * 
 	 * @param contextClassLoader import context class loader management strategy
-	 * @see ImportContextClassLoader
 	 */
 	public void setImportContextClassLoader(ImportContextClassLoaderEnum contextClassLoader) {
 		Assert.notNull(contextClassLoader);
@@ -281,46 +267,13 @@ public abstract class AbstractOsgiServiceImportFactoryBean implements FactoryBea
 	 * Returns the context class loader management strategy.
 	 * 
 	 * @return the context class loader management strategy
-	 * @deprecated As of Spring DM 2.0, replaced by {@link #getImportContextClassLoader()}
-	 */
-	public ImportContextClassLoader getContextClassLoader() {
-		return ImportContextClassLoader.getImportContextClassLoader(contextClassLoader);
-	}
-
-	/**
-	 * Returns the context class loader management strategy.
-	 * 
-	 * @return the context class loader management strategy
 	 */
 	public ImportContextClassLoaderEnum getImportContextClassLoader() {
 		return contextClassLoader;
 	}
 
-	/**
-	 * Returns the cardinality used by this importer.
-	 * 
-	 * @return importer cardinality
-	 * @deprecated As of Spring DM 2.0, replaced by {@link #getAvailability()}
-	 */
-	public Cardinality getCardinality() {
-		return getInternalCardinality();
-	}
-
-	abstract Cardinality getInternalCardinality();
-
 	public Availability getAvailability() {
 		return availability;
-	}
-
-	/**
-	 * Sets the importer cardinality (0..1, 1..1, 0..N, or 1..N). Default is 1..X.
-	 * 
-	 * @param cardinality importer cardinality.
-	 * @deprecated As of Spring DM 2.0, replaced by {@link #setAvailability(Availability)}
-	 */
-	public void setCardinality(Cardinality cardinality) {
-		Assert.notNull(cardinality);
-		this.availability = cardinality.getAvailability();
 	}
 
 	/**
