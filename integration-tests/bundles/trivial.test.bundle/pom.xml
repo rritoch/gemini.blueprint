@@ -30,9 +30,8 @@
 
         <!-- JUnit is required at build time not just test time -->
         <dependency>
-            <groupId>org.junit</groupId>
-            <artifactId>com.springsource.org.junit</artifactId>
-            <version>4.9.0</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
