@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -24,21 +24,21 @@ import org.springframework.beans.factory.FactoryBean;
  */
 public class BeanFactoryFB implements BeanFactoryAware, FactoryBean<BeanFactory> {
 
-	private BeanFactory beanFactory;
+    private BeanFactory beanFactory;
 
-	public BeanFactory getObject() throws Exception {
-		return beanFactory;
-	}
+    public BeanFactory getObject() throws Exception {
+        return beanFactory;
+    }
 
-	public Class<? extends BeanFactory> getObjectType() {
-		return BeanFactory.class;
-	}
+    public Class<? extends BeanFactory> getObjectType() {
+        return BeanFactory.class;
+    }
 
-	public boolean isSingleton() {
-		return true;
-	}
+    public boolean isSingleton() {
+        return true;
+    }
 
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }

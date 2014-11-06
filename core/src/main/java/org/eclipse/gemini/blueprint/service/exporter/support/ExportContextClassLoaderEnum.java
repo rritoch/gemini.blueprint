@@ -30,5 +30,5 @@ public enum ExportContextClassLoaderEnum {
 	/** The tccl will not be managed */
 	UNMANAGED,
 	/** The tccl will be set to that of the service provider upon service invocation */
-	SERVICE_PROVIDER;
+	SERVICE_PROVIDER
 }

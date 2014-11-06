@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   Costin Leau - VMware Inc.
  *****************************************************************************/
@@ -18,26 +18,26 @@ package org.eclipse.gemini.blueprint.blueprint;
  */
 public class CustomType {
 
-	private String name;
+    private String name;
 
-	public CustomType(String name) {
-		this.name = name;
-	}
+    public CustomType(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Returns the name.
-	 * 
-	 * @return Returns the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Returns the name.
+     *
+     * @return Returns the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	public boolean equals(Object o) {
-		if (o == null)
-			return false;
-		if (o.getClass() != this.getClass())
-			return false;
-		return this.name.equals(((CustomType) o).getName());
-	}
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        if (o.getClass() != this.getClass())
+            return false;
+        return this.name.equals(((CustomType) o).getName());
+    }
 }

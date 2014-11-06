@@ -7,16 +7,12 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.internal.service.collection;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import org.eclipse.gemini.blueprint.service.importer.ImportedOsgiServiceProxy;
 import org.eclipse.gemini.blueprint.service.importer.support.internal.aop.ProxyPlusCallback;
@@ -28,73 +24,77 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 /**
  * Simple, JDK based proxy creator useful for testing only.
- * 
+ *
  * @author Costin Leau
  */
 public class SimpleServiceJDKProxyCreator implements ServiceProxyCreator {
 
-	private Class<?>[] classes;
+    private Class<?>[] classes;
 
-	private ClassLoader loader;
+    private ClassLoader loader;
 
-	private BundleContext context;
-
-
-	private class JDKHandler implements InvocationHandler {
-
-		private final ServiceReference reference;
+    private BundleContext context;
 
 
-		public JDKHandler(ServiceReference reference) {
-			this.reference = reference;
-		}
+    private class JDKHandler implements InvocationHandler {
 
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			Object service = context.getService(reference);
-
-			if (AopUtils.isEqualsMethod(method)) {
-				return (equals(args[0]) ? Boolean.TRUE : Boolean.FALSE);
-			}
-
-			return ReflectionUtils.invokeMethod(method, service, args);
-		}
-
-		public boolean equals(Object other) {
-			if (other == this) {
-				return true;
-			}
-			if (other == null) {
-				return false;
-			}
-
-			if (Proxy.isProxyClass(other.getClass())) {
-				InvocationHandler ih = Proxy.getInvocationHandler(other);
-				if (ih instanceof JDKHandler) {
-					return reference.equals(((JDKHandler) ih).reference);
-				}
-			}
-			return false;
-		}
-	}
+        private final ServiceReference reference;
 
 
-	public SimpleServiceJDKProxyCreator(BundleContext context, Class<?>[] classes, ClassLoader loader) {
-		// add Spring-DM proxies
-		Object[] obj = ObjectUtils.addObjectToArray(classes, ImportedOsgiServiceProxy.class);
-		this.classes = (Class[]) ObjectUtils.addObjectToArray(obj, SpringProxy.class);
-		System.out.println("given classes " + ObjectUtils.nullSafeToString(classes) + " | resulting classes "
-				+ ObjectUtils.nullSafeToString(this.classes));
-		this.loader = loader;
-		this.context = context;
-	}
+        public JDKHandler(ServiceReference reference) {
+            this.reference = reference;
+        }
 
-	public SimpleServiceJDKProxyCreator(BundleContext context, Class<?>[] classes) {
-		this(context, classes, SimpleServiceJDKProxyCreator.class.getClassLoader());
-	}
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            Object service = context.getService(reference);
 
-	public ProxyPlusCallback createServiceProxy(final ServiceReference reference) {
-		return new ProxyPlusCallback(Proxy.newProxyInstance(loader, classes, new JDKHandler(reference)), null);
-	}
+            if (AopUtils.isEqualsMethod(method)) {
+                return (equals(args[0]) ? Boolean.TRUE : Boolean.FALSE);
+            }
+
+            return ReflectionUtils.invokeMethod(method, service, args);
+        }
+
+        public boolean equals(Object other) {
+            if (other == this) {
+                return true;
+            }
+            if (other == null) {
+                return false;
+            }
+
+            if (Proxy.isProxyClass(other.getClass())) {
+                InvocationHandler ih = Proxy.getInvocationHandler(other);
+                if (ih instanceof JDKHandler) {
+                    return reference.equals(((JDKHandler) ih).reference);
+                }
+            }
+            return false;
+        }
+    }
+
+
+    public SimpleServiceJDKProxyCreator(BundleContext context, Class<?>[] classes, ClassLoader loader) {
+        // add Spring-DM proxies
+        Object[] obj = ObjectUtils.addObjectToArray(classes, ImportedOsgiServiceProxy.class);
+        this.classes = (Class[]) ObjectUtils.addObjectToArray(obj, SpringProxy.class);
+        System.out.println("given classes " + ObjectUtils.nullSafeToString(classes) + " | resulting classes "
+                + ObjectUtils.nullSafeToString(this.classes));
+        this.loader = loader;
+        this.context = context;
+    }
+
+    public SimpleServiceJDKProxyCreator(BundleContext context, Class<?>[] classes) {
+        this(context, classes, SimpleServiceJDKProxyCreator.class.getClassLoader());
+    }
+
+    public ProxyPlusCallback createServiceProxy(final ServiceReference reference) {
+        return new ProxyPlusCallback(Proxy.newProxyInstance(loader, classes, new JDKHandler(reference)), null);
+    }
 }

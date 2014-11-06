@@ -107,7 +107,7 @@ public abstract class ConfigUtils {
 	public static boolean matchExtenderVersionRange(Bundle bundle, String header, Version versionToMatch) {
 		Assert.notNull(bundle);
 		// get version range
-		String range = (String) bundle.getHeaders().get(header);
+		String range = bundle.getHeaders().get(header);
 
 		boolean trace = log.isTraceEnabled();
 
@@ -259,7 +259,7 @@ public abstract class ConfigUtils {
 	 */
 	public static boolean getPublishContext(Dictionary headers) {
 		String value = getDirectiveValue(headers, DIRECTIVE_PUBLISH_CONTEXT);
-		return (value != null ? Boolean.valueOf(value).booleanValue() : DIRECTIVE_PUBLISH_CONTEXT_DEFAULT);
+		return (value != null ? Boolean.valueOf(value) : DIRECTIVE_PUBLISH_CONTEXT_DEFAULT);
 	}
 
 	/**
@@ -274,7 +274,7 @@ public abstract class ConfigUtils {
 	 */
 	public static boolean getCreateAsync(Dictionary headers) {
 		String value = getDirectiveValue(headers, DIRECTIVE_CREATE_ASYNCHRONOUSLY);
-		return (value != null ? Boolean.valueOf(value).booleanValue() : DIRECTIVE_CREATE_ASYNCHRONOUSLY_DEFAULT);
+		return (value != null ? Boolean.valueOf(value) : DIRECTIVE_CREATE_ASYNCHRONOUSLY_DEFAULT);
 	}
 
 	/**
@@ -295,7 +295,7 @@ public abstract class ConfigUtils {
 			if (DIRECTIVE_TIMEOUT_VALUE_NONE.equalsIgnoreCase(value)) {
 				return DIRECTIVE_NO_TIMEOUT;
 			}
-			return Long.valueOf(value).longValue();
+			return Long.valueOf(value);
 		}
 
 		return DIRECTIVE_TIMEOUT_DEFAULT;
@@ -312,7 +312,7 @@ public abstract class ConfigUtils {
 	public static boolean getWaitForDependencies(Dictionary headers) {
 		String value = getDirectiveValue(headers, DIRECTIVE_WAIT_FOR_DEPS);
 
-		return (value != null ? Boolean.valueOf(value).booleanValue() : DIRECTIVE_WAIT_FOR_DEPS_DEFAULT);
+		return (value != null ? Boolean.valueOf(value) : DIRECTIVE_WAIT_FOR_DEPS_DEFAULT);
 	}
 
 	/**

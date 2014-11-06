@@ -7,12 +7,15 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.internal.service.collection;
+
+import org.eclipse.gemini.blueprint.GCTests;
+import org.junit.Test;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -22,46 +25,45 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import junit.framework.TestCase;
-
-import org.eclipse.gemini.blueprint.GCTests;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Costin Leau
- * 
  */
-public class WeakCollectionTest extends TestCase {
+public class WeakCollectionTest {
 
-	public void testWeakList() {
-		List list = new ArrayList();
+    @Test
+    public void testWeakList() {
+        List list = new ArrayList();
 
-		// add some weak references
-		for (int i = 0; i < 20; i++) {
-			list.add(new WeakReference(new Object()));
-		}
+        // add some weak references
+        for (int i = 0; i < 20; i++) {
+            list.add(new WeakReference(new Object()));
+        }
 
-		GCTests.assertGCed(new WeakReference(new Object()));
-		for (int i = 0; i < list.size(); i++) {
-			assertNull(((WeakReference) list.get(i)).get());
+        GCTests.assertGCed(new WeakReference(new Object()));
+        for (int i = 0; i < list.size(); i++) {
+            assertNull(((WeakReference) list.get(i)).get());
 
-		}
-	}
+        }
+    }
 
-	public void testWeakHashMap() {
-		Map weakMap = new WeakHashMap();
+    @Test
+    public void testWeakHashMap() {
+        Map weakMap = new WeakHashMap();
 
-		for (int i = 0; i < 10; i++) {
-			weakMap.put(new Object(), null);
-		}
+        for (int i = 0; i < 10; i++) {
+            weakMap.put(new Object(), null);
+        }
 
-		GCTests.assertGCed(new WeakReference(new Object()));
+        GCTests.assertGCed(new WeakReference(new Object()));
 
-		Set entries = weakMap.entrySet();
-		
-		for (Iterator iter = entries.iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			assertNull(entry.getKey());
-		}
+        Set entries = weakMap.entrySet();
 
-	}
+        for (Iterator iter = entries.iterator(); iter.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            assertNull(entry.getKey());
+        }
+
+    }
 }

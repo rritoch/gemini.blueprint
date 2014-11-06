@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -22,11 +22,11 @@ import java.util.Date;
  */
 public class ConstructorInjectionStaticFactory {
 
-	public static Object makeInstance(Date[] date) {
-		return date;
-	}
+    public static Object makeInstance(Date[] date) {
+        return date;
+    }
 
-	public static Object makeInstance(URL[] obj) {
-		return obj;
-	}
+    public static Object makeInstance(URL[] obj) {
+        return obj;
+    }
 }

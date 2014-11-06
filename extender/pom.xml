@@ -42,15 +42,19 @@
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>gemini-blueprint-io</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.aopalliance</groupId>-->
+            <!--<artifactId>com.springsource.org.aopalliance</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>org.aopalliance</groupId>
-            <artifactId>com.springsource.org.aopalliance</artifactId>
-            <scope>test</scope>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

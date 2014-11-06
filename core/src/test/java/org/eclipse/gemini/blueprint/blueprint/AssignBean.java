@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -25,19 +25,19 @@ import java.util.SortedSet;
  */
 public class AssignBean {
 
-	public AssignBean(Set set) {
-	}
+    public AssignBean(Set set) {
+    }
 
-	public AssignBean(SortedSet set) {
-	}
+    public AssignBean(SortedSet set) {
+    }
 
-	public AssignBean(Map map) {
-	}
+    public AssignBean(Map map) {
+    }
 
-	public AssignBean(SortedMap map) {
-	}
+    public AssignBean(SortedMap map) {
+    }
 
-	public AssignBean(Properties map) {
-	}
+    public AssignBean(Properties map) {
+    }
 
 }

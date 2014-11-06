@@ -7,14 +7,13 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service.importer.support.internal.aop;
 
-import org.eclipse.gemini.blueprint.service.importer.support.internal.aop.StaticServiceReferenceProxy;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -22,14 +21,14 @@ import org.osgi.framework.ServiceReference;
  */
 public class PublicStaticSwappingServiceReferenceProxy extends StaticServiceReferenceProxy {
 
-	/**
-	 * Constructs a new <code>PublicStaticSwappingServiceReferenceProxy</code>
-	 * instance.
-	 * 
-	 * @param target
-	 */
-	public PublicStaticSwappingServiceReferenceProxy(ServiceReference target) {
-		super(target);
-	}
+    /**
+     * Constructs a new <code>PublicStaticSwappingServiceReferenceProxy</code>
+     * instance.
+     *
+     * @param target
+     */
+    public PublicStaticSwappingServiceReferenceProxy(ServiceReference target) {
+        super(target);
+    }
 
 }

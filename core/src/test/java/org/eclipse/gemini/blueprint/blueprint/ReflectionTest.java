@@ -7,42 +7,43 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.blueprint;
 
+import org.junit.Test;
+
 import java.lang.reflect.Constructor;
 
-import junit.framework.TestCase;
+public class ReflectionTest {
 
-public class ReflectionTest extends TestCase {
+    static class Foo {
+        public Foo(boolean bool) {
+            System.out.println("boolean " + bool);
+        }
 
-	static class Foo {
-		public Foo(boolean bool) {
-			System.out.println("boolean " + bool);
-		}
+        public Foo(Boolean bool) {
+            System.out.println("Boolean " + bool);
+        }
+    }
 
-		public Foo(Boolean bool) {
-			System.out.println("Boolean " + bool);
-		}
-	};
+    @Test
+    public void testPrimitive() throws Exception {
+        Constructor[] constructors = Foo.class.getDeclaredConstructors();
+        for (Constructor constructor : constructors) {
+            Class[] parameterTypes = constructor.getParameterTypes();
+            for (Class class1 : parameterTypes) {
+                System.out.println(class1.getName());
+            }
+        }
 
-	public void testPrimitive() throws Exception {
-		Constructor[] constructors = Foo.class.getDeclaredConstructors();
-		for (Constructor constructor : constructors) {
-			Class[] parameterTypes = constructor.getParameterTypes();
-			for (Class class1 : parameterTypes) {
-				System.out.println(class1.getName());
-			}
-		}
+        boolean obj = true;
 
-		boolean obj = true;
-		
-		Foo foo = new Foo(Boolean.TRUE);
-		foo = new Foo(obj);
-		foo = new Foo((Boolean) true);
-	}
+        Foo foo = new Foo(Boolean.TRUE);
+        foo = new Foo(obj);
+        foo = new Foo((Boolean) true);
+    }
 }

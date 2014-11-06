@@ -78,10 +78,8 @@ public class ReferenceBeanDefinitionParser extends AbstractReferenceDefinitionPa
 	 * Apply default definitions to the existing bean definition. In this case, it means applying the timeout.
 	 * 
 	 * This method is called when a certain expected element is not present.
-	 * 
-	 * @param element
-	 * @param context
 	 * @param builder
+     * @param defaults
 	 */
 	protected void applyDefaultTimeout(BeanDefinitionBuilder builder, OsgiDefaultsDefinition defaults) {
 		builder.addPropertyValue(TIMEOUT_PROP, new TypedStringValue(defaults.getTimeout()));

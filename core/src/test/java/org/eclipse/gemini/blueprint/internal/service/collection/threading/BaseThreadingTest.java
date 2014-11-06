@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -20,13 +20,12 @@ import org.junit.Test;
 
 /**
  * @author Costin Leau
- * 
  */
 public abstract class BaseThreadingTest extends MultithreadedTest {
-	static int RUN_TIMES = 3;
+    static int RUN_TIMES = 3;
 
     @Test
-	public void runTest() throws Throwable {
-		TestFramework.runManyTimes(this, RUN_TIMES);
-	}
+    public void runTest() throws Throwable {
+        TestFramework.runManyTimes(this, RUN_TIMES);
+    }
 }

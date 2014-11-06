@@ -7,61 +7,59 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint;
 
-import java.lang.ref.Reference;
-
 import junit.framework.Assert;
+
+import java.lang.ref.Reference;
 
 /**
  * Utility class providing methods related to 'Garbage Collector' and
  * WeakReferences.
  * Normally used inside JUnit test cases.
- * 
+ *
  * @author Costin Leau
- * 
  */
 public abstract class GCTests {
 
-	/**
-	 * Number of iterators while calling the GC.
-	 */
-	public static int GC_ITERATIONS = 30;
+    /**
+     * Number of iterators while calling the GC.
+     */
+    public static int GC_ITERATIONS = 30;
 
-	public static void assertGCed(Reference reference) {
-		assertGCed("given object was not reclaimed", reference);
-	}
+    public static void assertGCed(Reference reference) {
+        assertGCed("given object was not reclaimed", reference);
+    }
 
-	/**
-	 * Assert that the given object reference has been reclaimed. This assertion
-	 * is useful for determing if there are hard references to the given object.
-	 * 
-	 * @param message
-	 * @param reference
-	 */
-	public static void assertGCed(String message, Reference reference) {
-		int garbageSize = 300;
+    /**
+     * Assert that the given object reference has been reclaimed. This assertion
+     * is useful for determining if there are hard references to the given object.
+     *
+     * @param message
+     * @param reference
+     */
+    public static void assertGCed(String message, Reference reference) {
+        int garbageSize = 300;
 
-		for (int i = 0; i < GC_ITERATIONS; i++) {
-			if (reference.get() == null) {
-				return;
-			}
-			else {
-				// add garbage
-				byte[] garbage = new byte[garbageSize];
-				garbageSize = garbageSize << 1;
+        for (int i = 0; i < GC_ITERATIONS; i++) {
+            if (reference.get() == null) {
+                return;
+            } else {
+                // add garbage
+                byte[] garbage = new byte[garbageSize];
+                garbageSize = garbageSize << 1;
 
-				// trigger the GC
-				System.gc();
-				System.runFinalization();
-			}
-		}
+                // trigger the GC
+                System.gc();
+                System.runFinalization();
+            }
+        }
 
-		Assert.fail(message);
-	}
+        Assert.fail(message);
+    }
 }

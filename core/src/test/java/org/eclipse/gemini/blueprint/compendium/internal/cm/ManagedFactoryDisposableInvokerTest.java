@@ -7,139 +7,148 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.compendium.internal.cm;
 
+import org.eclipse.gemini.blueprint.compendium.internal.cm.ManagedFactoryDisposableInvoker.DestructionCodes;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.DisposableBean;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.eclipse.gemini.blueprint.compendium.internal.cm.ManagedFactoryDisposableInvoker.DestructionCodes;
-import org.springframework.beans.factory.DisposableBean;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Costin Leau
  */
-public class ManagedFactoryDisposableInvokerTest extends TestCase {
+public class ManagedFactoryDisposableInvokerTest {
 
-	enum Action {
-		INTERFACE, SPRING_CUSTOM_METHOD, OSGI_CUSTOM_METHOD;
-	}
-
-
-	private List<Action> actions;
+    enum Action {
+        INTERFACE, SPRING_CUSTOM_METHOD, OSGI_CUSTOM_METHOD
+    }
 
 
-	class A implements DisposableBean {
-
-		public void destroy() throws Exception {
-			actions.add(Action.INTERFACE);
-		}
-
-	}
-
-	class B extends A {
-
-		public void stop() {
-			actions.add(Action.SPRING_CUSTOM_METHOD);
-		}
-	}
-
-	class C extends B {
-
-		public void stop(int code) {
-			actions.add(Action.OSGI_CUSTOM_METHOD);
-		}
-	}
-
-	class D extends A {
-
-		public void stop(int code) {
-			actions.add(Action.OSGI_CUSTOM_METHOD);
-		}
-	}
-
-	class E {
-
-		public void stop() {
-			actions.add(Action.SPRING_CUSTOM_METHOD);
-		}
-
-		public void stop(int code) {
-			actions.add(Action.OSGI_CUSTOM_METHOD);
-		}
-	}
+    private List<Action> actions;
 
 
-	private ManagedFactoryDisposableInvoker invoker;
+    class A implements DisposableBean {
+
+        public void destroy() throws Exception {
+            actions.add(Action.INTERFACE);
+        }
+
+    }
+
+    class B extends A {
+
+        public void stop() {
+            actions.add(Action.SPRING_CUSTOM_METHOD);
+        }
+    }
+
+    class C extends B {
+
+        public void stop(int code) {
+            actions.add(Action.OSGI_CUSTOM_METHOD);
+        }
+    }
+
+    class D extends A {
+
+        public void stop(int code) {
+            actions.add(Action.OSGI_CUSTOM_METHOD);
+        }
+    }
+
+    class E {
+
+        public void stop() {
+            actions.add(Action.SPRING_CUSTOM_METHOD);
+        }
+
+        public void stop(int code) {
+            actions.add(Action.OSGI_CUSTOM_METHOD);
+        }
+    }
 
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		actions = new ArrayList<Action>();
-	}
+    private ManagedFactoryDisposableInvoker invoker;
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		invoker = null;
-		actions = null;
-	}
 
-	public void testDefinitionWithCustomMethods() throws Exception {
-		C c = new C();
-		invoker = new ManagedFactoryDisposableInvoker(C.class, "stop");
-		assertTrue(actions.isEmpty());
-		doInvoke(c);
-		assertEquals(3, actions.size());
-		assertSame(Action.INTERFACE, actions.get(0));
-		assertSame(Action.SPRING_CUSTOM_METHOD, actions.get(1));
-		assertSame(Action.OSGI_CUSTOM_METHOD, actions.get(2));
-	}
+    @Before
+    public void setUp() throws Exception {
 
-	public void testInterfaceAndSpringMethod() throws Exception {
-		B b = new B();
-		invoker = new ManagedFactoryDisposableInvoker(B.class, "stop");
-		assertTrue(actions.isEmpty());
-		doInvoke(b);
-		assertEquals(2, actions.size());
-		assertSame(Action.INTERFACE, actions.get(0));
-		assertSame(Action.SPRING_CUSTOM_METHOD, actions.get(1));
-	}
+        actions = new ArrayList<Action>();
+    }
 
-	public void testInterfaceAndOsgiMethod() throws Exception {
-		D d = new D();
-		invoker = new ManagedFactoryDisposableInvoker(D.class, "stop");
-		assertTrue(actions.isEmpty());
-		doInvoke(d);
-		assertEquals(2, actions.size());
-		assertSame(Action.INTERFACE, actions.get(0));
-		assertSame(Action.OSGI_CUSTOM_METHOD, actions.get(1));
-	}
+    @After
+    public void tearDown() throws Exception {
+        invoker = null;
+        actions = null;
+    }
 
-	public void testSpringAndOsgiMethod() throws Exception {
-		E e = new E();
-		invoker = new ManagedFactoryDisposableInvoker(E.class, "stop");
-		assertTrue(actions.isEmpty());
-		doInvoke(e);
-		assertEquals(2, actions.size());
-		assertSame(Action.SPRING_CUSTOM_METHOD, actions.get(0));
-		assertSame(Action.OSGI_CUSTOM_METHOD, actions.get(1));
-	}
+    @Test
+    public void testDefinitionWithCustomMethods() throws Exception {
+        C c = new C();
+        invoker = new ManagedFactoryDisposableInvoker(C.class, "stop");
+        assertTrue(actions.isEmpty());
+        doInvoke(c);
+        assertEquals(3, actions.size());
+        assertSame(Action.INTERFACE, actions.get(0));
+        assertSame(Action.SPRING_CUSTOM_METHOD, actions.get(1));
+        assertSame(Action.OSGI_CUSTOM_METHOD, actions.get(2));
+    }
 
-	public void testNoMethod() throws Exception {
-		invoker = new ManagedFactoryDisposableInvoker(Object.class, "stop");
-		doInvoke(new Object());
-		assertEquals(0, actions.size());
-	}
+    @Test
+    public void testInterfaceAndSpringMethod() throws Exception {
+        B b = new B();
+        invoker = new ManagedFactoryDisposableInvoker(B.class, "stop");
+        assertTrue(actions.isEmpty());
+        doInvoke(b);
+        assertEquals(2, actions.size());
+        assertSame(Action.INTERFACE, actions.get(0));
+        assertSame(Action.SPRING_CUSTOM_METHOD, actions.get(1));
+    }
 
-	private void doInvoke(Object target) {
-		invoker.destroy("test", target, DestructionCodes.BUNDLE_STOPPING);
-	}
+    @Test
+    public void testInterfaceAndOsgiMethod() throws Exception {
+        D d = new D();
+        invoker = new ManagedFactoryDisposableInvoker(D.class, "stop");
+        assertTrue(actions.isEmpty());
+        doInvoke(d);
+        assertEquals(2, actions.size());
+        assertSame(Action.INTERFACE, actions.get(0));
+        assertSame(Action.OSGI_CUSTOM_METHOD, actions.get(1));
+    }
+
+    @Test
+    public void testSpringAndOsgiMethod() throws Exception {
+        E e = new E();
+        invoker = new ManagedFactoryDisposableInvoker(E.class, "stop");
+        assertTrue(actions.isEmpty());
+        doInvoke(e);
+        assertEquals(2, actions.size());
+        assertSame(Action.SPRING_CUSTOM_METHOD, actions.get(0));
+        assertSame(Action.OSGI_CUSTOM_METHOD, actions.get(1));
+    }
+
+    @Test
+    public void testNoMethod() throws Exception {
+        invoker = new ManagedFactoryDisposableInvoker(Object.class, "stop");
+        doInvoke(new Object());
+        assertEquals(0, actions.size());
+    }
+
+    private void doInvoke(Object target) {
+        invoker.destroy("test", target, DestructionCodes.BUNDLE_STOPPING);
+    }
 }

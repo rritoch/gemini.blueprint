@@ -7,37 +7,39 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.blueprint.container;
 
-import java.beans.PropertyDescriptor;
-
-import junit.framework.TestCase;
-
 import org.eclipse.gemini.blueprint.service.importer.support.OsgiServiceProxyFactoryBean;
+import org.junit.Test;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
+import java.beans.PropertyDescriptor;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
- * 
  * @author Costin Leau
  */
-public class BlueprintFieldsTest extends TestCase {
+public class BlueprintFieldsTest {
 
-	public void testUseBlueprintExceptions() throws Exception {
-		OsgiServiceProxyFactoryBean fb = new OsgiServiceProxyFactoryBean();
-		BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fb);
-		String propertyName = "useBlueprintExceptions";
-		for (PropertyDescriptor desc : wrapper.getPropertyDescriptors()) {
-			System.out.println(desc.getName());
-		}
-		Class type = wrapper.getPropertyType(propertyName);
-		System.out.println("type is " + type);
-		assertTrue(wrapper.isWritableProperty(propertyName));
-		assertFalse(wrapper.isReadableProperty(propertyName));
-	}
+    @Test
+    public void testUseBlueprintExceptions() throws Exception {
+        OsgiServiceProxyFactoryBean fb = new OsgiServiceProxyFactoryBean();
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fb);
+        String propertyName = "useBlueprintExceptions";
+        for (PropertyDescriptor desc : wrapper.getPropertyDescriptors()) {
+            System.out.println(desc.getName());
+        }
+        Class type = wrapper.getPropertyType(propertyName);
+        System.out.println("type is " + type);
+        assertTrue(wrapper.isWritableProperty(propertyName));
+        assertFalse(wrapper.isReadableProperty(propertyName));
+    }
 }

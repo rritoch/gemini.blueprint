@@ -7,45 +7,51 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
- * 
  * @author Costin Leau
- * 
  */
-public class OsgiExceptionTest extends TestCase {
+public class OsgiExceptionTest {
 
-	public void testOsgiException() {
-		OsgiException exception = new OsgiException();
-		assertNull(exception.getCause());
-		assertNull(exception.getMessage());
-	}
+    @Test
+    public void testOsgiException() {
+        OsgiException exception = new OsgiException();
+        assertNull(exception.getCause());
+        assertNull(exception.getMessage());
+    }
 
-	public void testOsgiExceptionStringThrowable() {
-		String msg = "msg";
-		Exception ex = new Exception();
-		OsgiException exception = new OsgiException(msg, ex);
-		assertEquals(msg, exception.getMessage());
-		assertEquals(ex, exception.getCause());
-	}
+    @Test
+    public void testOsgiExceptionStringThrowable() {
+        String msg = "msg";
+        Exception ex = new Exception();
+        OsgiException exception = new OsgiException(msg, ex);
+        assertEquals(msg, exception.getMessage());
+        assertEquals(ex, exception.getCause());
+    }
 
-	public void testOsgiExceptionString() {
-		String msg = "msg";
-		OsgiException exception = new OsgiException(msg);
-		assertEquals(msg, exception.getMessage());
-	}
+    @Test
+    public void testOsgiExceptionString() {
+        String msg = "msg";
+        OsgiException exception = new OsgiException(msg);
+        assertEquals(msg, exception.getMessage());
+    }
 
-	public void testOsgiExceptionThrowable() {
-		Exception ex = new Exception();
-		OsgiException exception = new OsgiException(ex);
-		assertSame(ex, exception.getCause());
-	}
+    @Test
+    public void testOsgiExceptionThrowable() {
+        Exception ex = new Exception();
+        OsgiException exception = new OsgiException(ex);
+        assertSame(ex, exception.getCause());
+    }
 }

@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -23,26 +23,26 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class DynamicCycleComponent implements BeanFactoryAware {
 
-	private BeanFactory beanFactory;
-	private final String name;
+    private BeanFactory beanFactory;
+    private final String name;
 
-	public DynamicCycleComponent(String name, BeanFactory beanFactory) {
-		this.name = name;
-		this.beanFactory = beanFactory;
-	}
+    public DynamicCycleComponent(String name, BeanFactory beanFactory) {
+        this.name = name;
+        this.beanFactory = beanFactory;
+    }
 
-	public void init() {
-		beanFactory.getBean(name);
-	}
+    public void init() {
+        beanFactory.getBean(name);
+    }
 
-	public void setProp(Object prop) {
-		if (beanFactory == null) {
-			throw new IllegalStateException("bean factory not initialized");
-		}
-		beanFactory.getBean(name);
-	}
+    public void setProp(Object prop) {
+        if (beanFactory == null) {
+            throw new IllegalStateException("bean factory not initialized");
+        }
+        beanFactory.getBean(name);
+    }
 
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }

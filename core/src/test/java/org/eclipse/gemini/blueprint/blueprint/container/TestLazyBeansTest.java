@@ -7,21 +7,20 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.blueprint.container;
 
-import java.util.Collection;
-
-import junit.framework.TestCase;
-
-import org.eclipse.gemini.blueprint.blueprint.container.SpringBlueprintContainer;
 import org.eclipse.gemini.blueprint.blueprint.container.support.BlueprintEditorRegistrar;
 import org.eclipse.gemini.blueprint.context.support.BundleContextAwareProcessor;
 import org.eclipse.gemini.blueprint.context.support.PublicBlueprintDocumentLoader;
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.springframework.beans.BeansException;
@@ -30,58 +29,63 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+
+import java.util.Collection;
 
 /**
  * @author Costin Leau
  */
-public class TestLazyBeansTest extends TestCase {
+public class TestLazyBeansTest {
 
-	private static final String CONFIG = "lazy-beans.xml";
+    private static final String CONFIG = "lazy-beans.xml";
 
-	private GenericApplicationContext context;
-	private XmlBeanDefinitionReader reader;
-	protected MockBundleContext bundleContext;
-	private BlueprintContainer blueprintContainer;
+    private GenericApplicationContext context;
+    private XmlBeanDefinitionReader reader;
+    protected MockBundleContext bundleContext;
+    private BlueprintContainer blueprintContainer;
 
-	protected void setUp() throws Exception {
-		bundleContext = new MockBundleContext();
+    @Before
+    public void setUp() throws Exception {
+        bundleContext = new MockBundleContext();
 
-		context = new GenericApplicationContext();
-		context.setClassLoader(getClass().getClassLoader());
-		context.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
-		context.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
+        context = new GenericApplicationContext();
+        context.setClassLoader(getClass().getClassLoader());
+        context.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
+        context.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
 
-			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-				beanFactory.addPropertyEditorRegistrar(new BlueprintEditorRegistrar());
-				beanFactory.registerSingleton("blueprintContainer",
-						new SpringBlueprintContainer(context));
-			}
-		});
+            public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+                beanFactory.addPropertyEditorRegistrar(new BlueprintEditorRegistrar());
+                beanFactory.registerSingleton("blueprintContainer",
+                        new SpringBlueprintContainer(context));
+            }
+        });
 
-		reader = new XmlBeanDefinitionReader(context);
-		reader.setDocumentLoader(new PublicBlueprintDocumentLoader());
-		reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
-		context.refresh();
+        reader = new XmlBeanDefinitionReader(context);
+        reader.setDocumentLoader(new PublicBlueprintDocumentLoader());
+        reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
+        context.refresh();
 
-		blueprintContainer = new SpringBlueprintContainer(context);
-	}
+        blueprintContainer = new SpringBlueprintContainer(context);
+    }
 
-	protected void tearDown() throws Exception {
-		context.close();
-		context = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        context.close();
+        context = null;
+    }
 
-	public void testConvertersAvailable() throws Exception {
-		System.out.println(blueprintContainer.getComponentIds());
-		blueprintContainer.getComponentInstance("lazyCollection");
-	}
+    @Test
+    public void testConvertersAvailable() throws Exception {
+        System.out.println(blueprintContainer.getComponentIds());
+        blueprintContainer.getComponentInstance("lazyCollection");
+    }
 
-	public void testBeanCount() throws Exception {
-		Collection<ComponentMetadata> metadata = blueprintContainer.getMetadata(ComponentMetadata.class);
-		System.out.println(metadata.size());
-		for (ComponentMetadata componentMetadata : metadata) {
-			System.out.println(componentMetadata.getId());
-		}
-	}
+    @Test
+    public void testBeanCount() throws Exception {
+        Collection<ComponentMetadata> metadata = blueprintContainer.getMetadata(ComponentMetadata.class);
+        System.out.println(metadata.size());
+        for (ComponentMetadata componentMetadata : metadata) {
+            System.out.println(componentMetadata.getId());
+        }
+    }
 }

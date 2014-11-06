@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -21,21 +21,21 @@ import java.util.Properties;
  */
 public class ConstructorInjectedBean {
 
-	private Object target;
+    private Object target;
 
-	public ConstructorInjectedBean(String arg1) {
-		this.target = arg1;
-	}
+    public ConstructorInjectedBean(String arg1) {
+        this.target = arg1;
+    }
 
-	public ConstructorInjectedBean(Properties arg1) {
-		this.target = arg1;
-	}
+    public ConstructorInjectedBean(Properties arg1) {
+        this.target = arg1;
+    }
 
-	public ConstructorInjectedBean(Properties[] arg1) {
-		this.target = arg1;
-	}
+    public ConstructorInjectedBean(Properties[] arg1) {
+        this.target = arg1;
+    }
 
-	public Object getTarget() {
-		return target;
-	}
+    public Object getTarget() {
+        return target;
+    }
 }

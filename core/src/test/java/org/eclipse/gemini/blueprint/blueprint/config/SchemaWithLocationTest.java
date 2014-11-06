@@ -7,47 +7,53 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.blueprint.config;
 
-import junit.framework.TestCase;
-
 import org.eclipse.gemini.blueprint.context.support.PublicBlueprintDocumentLoader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Test for xml files that specify the blueprint schema w/o a location.
- * 
+ *
  * @author Costin Leau
  */
-public class SchemaWithLocationTest extends TestCase {
+public class SchemaWithLocationTest {
 
-	private static final String CONFIG = "schemaWithoutLocation.xml";
+    private static final String CONFIG = "schemaWithoutLocation.xml";
 
-	private GenericApplicationContext context;
-	private XmlBeanDefinitionReader reader;
+    private GenericApplicationContext context;
+    private XmlBeanDefinitionReader reader;
 
-	protected void setUp() throws Exception {
-		context = new GenericApplicationContext();
-		context.setClassLoader(getClass().getClassLoader());
-		reader = new XmlBeanDefinitionReader(context);
-		reader.setDocumentLoader(new PublicBlueprintDocumentLoader());
-		reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
-		context.refresh();
-	}
+    @Before
+    public void setUp() throws Exception {
+        context = new GenericApplicationContext();
+        context.setClassLoader(getClass().getClassLoader());
+        reader = new XmlBeanDefinitionReader(context);
+        reader.setDocumentLoader(new PublicBlueprintDocumentLoader());
+        reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
+        context.refresh();
+    }
 
-	protected void tearDown() throws Exception {
-		context.close();
-		context = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        context.close();
+        context = null;
+    }
 
-	public void testContainerSanity() throws Exception {
-		assertEquals(1, context.getBeanDefinitionCount());
-	}
+    @Test
+    public void testContainerSanity() throws Exception {
+        assertEquals(1, context.getBeanDefinitionCount());
+    }
 }

@@ -7,189 +7,201 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.internal.service.interceptor;
 
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Hashtable;
-
-import junit.framework.TestCase;
-
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.eclipse.gemini.blueprint.mock.MockServiceReference;
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.eclipse.gemini.blueprint.service.importer.ServiceReferenceProxy;
 import org.eclipse.gemini.blueprint.service.importer.support.internal.aop.ServiceDynamicInterceptor;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
-import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+
+import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test for the listener rebinding behavior. Makes sure the bind/unbind contract is properly respected.
- * 
+ *
  * @author Costin Leau
- * 
  */
-public class OsgiServiceDynamicInterceptorListenerTest extends TestCase {
+public class OsgiServiceDynamicInterceptorListenerTest {
 
-	private ServiceDynamicInterceptor interceptor;
+    private ServiceDynamicInterceptor interceptor;
 
-	private OsgiServiceLifecycleListener listener;
+    private OsgiServiceLifecycleListener listener;
 
-	private MockBundleContext bundleContext;
+    private MockBundleContext bundleContext;
 
-	private ServiceReference[] refs;
+    private ServiceReference[] refs;
 
-	protected void setUp() throws Exception {
-		listener = new SimpleTargetSourceLifecycleListener();
+    @Before
+    public void setUp() throws Exception {
+        listener = new SimpleTargetSourceLifecycleListener();
 
-		refs = new ServiceReference[] { new MockServiceReference() };
+        refs = new ServiceReference[]{new MockServiceReference()};
 
-		bundleContext = new MockBundleContext() {
+        bundleContext = new MockBundleContext() {
 
-			public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-				return refs;
-			}
-		};
+            public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+                return refs;
+            }
+        };
 
-		interceptor = new ServiceDynamicInterceptor(bundleContext, null, null, getClass().getClassLoader());
-		interceptor.setListeners(new OsgiServiceLifecycleListener[] { listener });
-		interceptor.setMandatoryService(false);
-		interceptor.setProxy(new Object());
-		interceptor.setServiceImporter(new Object());
-		interceptor.setSticky(false);
+        interceptor = new ServiceDynamicInterceptor(bundleContext, null, null, getClass().getClassLoader());
+        interceptor.setListeners(new OsgiServiceLifecycleListener[]{listener});
+        interceptor.setMandatoryService(false);
+        interceptor.setProxy(new Object());
+        interceptor.setServiceImporter(new Object());
+        interceptor.setSticky(false);
 
-		interceptor.setRetryTimeout(1);
+        interceptor.setRetryTimeout(1);
 
-		SimpleTargetSourceLifecycleListener.BIND = 0;
-		SimpleTargetSourceLifecycleListener.UNBIND = 0;
-	}
+        SimpleTargetSourceLifecycleListener.BIND = 0;
+        SimpleTargetSourceLifecycleListener.UNBIND = 0;
+    }
 
-	protected void tearDown() throws Exception {
-		interceptor = null;
-		listener = null;
-		bundleContext = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        interceptor = null;
+        listener = null;
+        bundleContext = null;
+    }
 
-	public void testBind() {
-		assertEquals(0, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+    @Test
+    public void testBind() {
+        assertEquals(0, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
 
-		interceptor.afterPropertiesSet();
+        interceptor.afterPropertiesSet();
 
-		assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
-	}
+        assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+    }
 
-	public void testUnbind() {
-		interceptor.afterPropertiesSet();
+    @Test
+    public void testUnbind() {
+        interceptor.afterPropertiesSet();
 
-		assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+        assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
 
-		ServiceListener sl = (ServiceListener) bundleContext.getServiceListeners().iterator().next();
+        ServiceListener sl = bundleContext.getServiceListeners().iterator().next();
 
-		// save old ref and invalidate it so new services are not found
-		ServiceReference oldRef = refs[0];
-		refs = null;
+        // save old ref and invalidate it so new services are not found
+        ServiceReference oldRef = refs[0];
+        refs = null;
 
-		sl.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, oldRef));
+        sl.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, oldRef));
 
-		assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(1, SimpleTargetSourceLifecycleListener.UNBIND);
-	}
+        assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(1, SimpleTargetSourceLifecycleListener.UNBIND);
+    }
 
-	public void testRebindWhenNewServiceAppears() {
-		interceptor.afterPropertiesSet();
+    @Test
+    public void testRebindWhenNewServiceAppears() {
+        interceptor.afterPropertiesSet();
 
-		ServiceListener sl = (ServiceListener) bundleContext.getServiceListeners().iterator().next();
+        ServiceListener sl = bundleContext.getServiceListeners().iterator().next();
 
-		Dictionary props = new Hashtable();
-		// increase service ranking
-		props.put(Constants.SERVICE_RANKING, new Integer(10));
+        Dictionary props = new Hashtable();
+        // increase service ranking
+        props.put(Constants.SERVICE_RANKING, 10);
 
-		ServiceReference ref = new MockServiceReference(null, props, null);
+        ServiceReference ref = new MockServiceReference(null, props, null);
 
-		ServiceEvent event = new ServiceEvent(ServiceEvent.REGISTERED, ref);
+        ServiceEvent event = new ServiceEvent(ServiceEvent.REGISTERED, ref);
 
-		assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+        assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
 
-		sl.serviceChanged(event);
+        sl.serviceChanged(event);
 
-		assertEquals(2, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
-	}
+        assertEquals(2, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+    }
 
-	public void testRebindWhenServiceGoesDownButAReplacementIsFound() {
-		interceptor.afterPropertiesSet();
+    @Test
+    public void testRebindWhenServiceGoesDownButAReplacementIsFound() {
+        interceptor.afterPropertiesSet();
 
-		assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+        assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
 
-		ServiceListener sl = (ServiceListener) bundleContext.getServiceListeners().iterator().next();
+        ServiceListener sl = bundleContext.getServiceListeners().iterator().next();
 
-		// unregister the old service
-		sl.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, refs[0]));
+        // unregister the old service
+        sl.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, refs[0]));
 
-		// a new one is found since the mock context will return one again
-		assertEquals(2, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
-	}
+        // a new one is found since the mock context will return one again
+        assertEquals(2, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+    }
 
-	public void testStickinessWhenABetterServiceIsAvailable() throws Exception {
-		interceptor.setSticky(true);
-		interceptor.afterPropertiesSet();
+    @Test
+    public void testStickinessWhenABetterServiceIsAvailable() throws Exception {
+        interceptor.setSticky(true);
+        interceptor.afterPropertiesSet();
 
-		ServiceListener sl = (ServiceListener) bundleContext.getServiceListeners().iterator().next();
+        ServiceListener sl = bundleContext.getServiceListeners().iterator().next();
 
-		Dictionary props = new Hashtable();
-		// increase service ranking
-		props.put(Constants.SERVICE_RANKING, new Integer(10));
+        Dictionary props = new Hashtable();
+        // increase service ranking
+        props.put(Constants.SERVICE_RANKING, 10);
 
-		ServiceReference ref = new MockServiceReference(null, props, null);
-		ServiceEvent event = new ServiceEvent(ServiceEvent.REGISTERED, ref);
+        ServiceReference ref = new MockServiceReference(null, props, null);
+        ServiceEvent event = new ServiceEvent(ServiceEvent.REGISTERED, ref);
 
-		assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+        assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
 
-		sl.serviceChanged(event);
+        sl.serviceChanged(event);
 
-		assertEquals("the proxy is not sticky", 1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
-	}
+        assertEquals("the proxy is not sticky", 1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+    }
 
-	public void testStickinessWhenServiceGoesDown() throws Exception {
-		interceptor.setSticky(true);
-		interceptor.afterPropertiesSet();
+    @Test
+    public void testStickinessWhenServiceGoesDown() throws Exception {
+        interceptor.setSticky(true);
+        interceptor.afterPropertiesSet();
 
-		ServiceListener sl = (ServiceListener) bundleContext.getServiceListeners().iterator().next();
+        ServiceListener sl = bundleContext.getServiceListeners().iterator().next();
 
-		Dictionary props = new Hashtable();
-		// increase service ranking
-		props.put(Constants.SERVICE_RANKING, new Integer(10));
+        Dictionary props = new Hashtable();
+        // increase service ranking
+        props.put(Constants.SERVICE_RANKING, 10);
 
-		ServiceReference higherRankingRef = new MockServiceReference(null, props, null);
-		refs = new ServiceReference[] { new MockServiceReference(), higherRankingRef };
+        ServiceReference higherRankingRef = new MockServiceReference(null, props, null);
+        refs = new ServiceReference[]{new MockServiceReference(), higherRankingRef};
 
-		assertTrue(Arrays.equals(bundleContext.getServiceReferences(null, null), refs));
+        assertTrue(Arrays.equals(bundleContext.getServiceReferences((String) null, null), refs));
 
-		assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+        assertEquals(1, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
 
-		sl.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, refs[0]));
+        sl.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, refs[0]));
 
-		assertEquals(2, SimpleTargetSourceLifecycleListener.BIND);
-		assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
+        assertEquals(2, SimpleTargetSourceLifecycleListener.BIND);
+        assertEquals(0, SimpleTargetSourceLifecycleListener.UNBIND);
 
-		assertSame("incorrect backing reference selected", higherRankingRef, ((ServiceReferenceProxy) interceptor
-				.getServiceReference()).getTargetServiceReference());
-	}
+        assertSame("incorrect backing reference selected", higherRankingRef, ((ServiceReferenceProxy) interceptor
+                .getServiceReference()).getTargetServiceReference());
+    }
 }

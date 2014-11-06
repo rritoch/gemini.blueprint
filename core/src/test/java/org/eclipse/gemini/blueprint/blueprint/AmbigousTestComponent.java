@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -19,37 +19,37 @@ package org.eclipse.gemini.blueprint.blueprint;
  */
 public class AmbigousTestComponent {
 
-	private String str1, str2;
-	private Object obj;
+    private String str1, str2;
+    private Object obj;
 
 
-	public AmbigousTestComponent(String arg1, String arg2, Object arg3) {
-		this.str1 = arg1;
-		this.str2 = arg2;
-		this.obj = arg3;
-	}
+    public AmbigousTestComponent(String arg1, String arg2, Object arg3) {
+        this.str1 = arg1;
+        this.str2 = arg2;
+        this.obj = arg3;
+    }
 
-	public AmbigousTestComponent() {
+    public AmbigousTestComponent() {
 
-	}
+    }
 
-	public String getStr1() {
-		return str1;
-	}
+    public String getStr1() {
+        return str1;
+    }
 
-	public String getStr2() {
-		return str2;
-	}
+    public String getStr2() {
+        return str2;
+    }
 
-	public Object getObj() {
-		return obj;
-	}
+    public Object getObj() {
+        return obj;
+    }
 
-	public void setAmbigousProp(int prop) {
-		System.out.println("int setter called");
-	}
-	
-	public void setAmbigousProp(Object prop) {
-		System.out.println("Object setter called");
-	}
+    public void setAmbigousProp(int prop) {
+        System.out.println("int setter called");
+    }
+
+    public void setAmbigousProp(Object prop) {
+        System.out.println("Object setter called");
+    }
 }

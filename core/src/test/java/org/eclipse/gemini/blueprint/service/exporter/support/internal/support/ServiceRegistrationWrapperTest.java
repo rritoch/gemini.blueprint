@@ -7,113 +7,125 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service.exporter.support.internal.support;
 
+import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+import org.eclipse.gemini.blueprint.service.exporter.OsgiServiceRegistrationListener;
+import org.eclipse.gemini.blueprint.service.exporter.SimpleOsgiServiceRegistrationListener;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
-import org.easymock.MockControl;
-import org.eclipse.gemini.blueprint.service.exporter.OsgiServiceRegistrationListener;
-import org.eclipse.gemini.blueprint.service.exporter.SimpleOsgiServiceRegistrationListener;
-import org.eclipse.gemini.blueprint.service.exporter.support.internal.support.ListenerNotifier;
-import org.eclipse.gemini.blueprint.service.exporter.support.internal.support.ServiceRegistrationDecorator;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
-import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+public class ServiceRegistrationWrapperTest {
 
-public class ServiceRegistrationWrapperTest extends TestCase {
+    private ServiceRegistration registration;
 
-	private ServiceRegistration registration;
+    private ServiceRegistration actualRegistration;
 
-	private ServiceRegistration actualRegistration;
+    @Before
+    public void setUp() throws Exception {
+        actualRegistration = createMock(ServiceRegistration.class);
 
-	private MockControl mc;
+        final ListenerNotifier notifier =
+                new ListenerNotifier(
+                        new OsgiServiceRegistrationListener[]{new SimpleOsgiServiceRegistrationListener()});
 
-	protected void setUp() throws Exception {
-		mc = MockControl.createControl(ServiceRegistration.class);
-		actualRegistration = (ServiceRegistration) mc.getMock();
+        ServiceRegistrationDecorator registrationDecorator = new ServiceRegistrationDecorator(actualRegistration);
+        registrationDecorator.setNotifier(new UnregistrationNotifier() {
 
-		final ListenerNotifier notifier =
-				new ListenerNotifier(
-						new OsgiServiceRegistrationListener[] { new SimpleOsgiServiceRegistrationListener() });
+            public void unregister(Map properties) {
+                notifier.callUnregister(null, properties);
+            }
+        });
 
-		ServiceRegistrationDecorator registrationDecorator = new ServiceRegistrationDecorator(actualRegistration);
-		registrationDecorator.setNotifier(new UnregistrationNotifier() {
+        registration = registrationDecorator;
 
-			public void unregister(Map properties) {
-				notifier.callUnregister(null, properties);
-			}
-		});
+        SimpleOsgiServiceRegistrationListener.REGISTERED = 0;
+        SimpleOsgiServiceRegistrationListener.UNREGISTERED = 0;
+    }
 
-		registration = registrationDecorator;
+    @After
+    public void tearDown() throws Exception {
+        verify(actualRegistration);
+        registration = null;
+    }
 
-		SimpleOsgiServiceRegistrationListener.REGISTERED = 0;
-		SimpleOsgiServiceRegistrationListener.UNREGISTERED = 0;
-	}
+    @Test
+    public void testGetReference() {
+        ServiceReference reference = new MockServiceReference();
+        expect(actualRegistration.getReference()).andReturn(reference);
+        replay(actualRegistration);
 
-	protected void tearDown() throws Exception {
-		mc.verify();
-		registration = null;
-	}
+        assertSame(reference, registration.getReference());
+    }
 
-	public void testGetReference() {
-		ServiceReference reference = new MockServiceReference();
-		mc.expectAndReturn(actualRegistration.getReference(), reference);
-		mc.replay();
+    @Test
+    public void testSetProperties() {
+        Dictionary props = new Hashtable();
+        actualRegistration.setProperties(props);
+        expectLastCall();
+        replay(actualRegistration);
 
-		assertSame(reference, registration.getReference());
-	}
+        registration.setProperties(props);
+    }
 
-	public void testSetProperties() {
-		Dictionary props = new Hashtable();
-		actualRegistration.setProperties(props);
-		mc.replay();
+    @Test
+    public void testUnregister() {
+        ServiceReference reference = new MockServiceReference();
+        expect(actualRegistration.getReference()).andReturn(reference);
+        actualRegistration.unregister();
+        replay(actualRegistration);
 
-		registration.setProperties(props);
-	}
+        registration.unregister();
+    }
 
-	public void testUnregister() {
-		ServiceReference reference = new MockServiceReference();
-		mc.expectAndReturn(actualRegistration.getReference(), reference);
-		actualRegistration.unregister();
-		mc.replay();
+    @Test
+    public void testUnregistrationNotified() {
+        assertEquals(0, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
 
-		registration.unregister();
-	}
+        ServiceReference reference = new MockServiceReference();
+        expect(actualRegistration.getReference()).andReturn(reference);
+        actualRegistration.unregister();
+        expectLastCall();
+        replay(actualRegistration);
 
-	public void testUnregistrationNotified() {
-		assertEquals(0, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
+        registration.unregister();
 
-		ServiceReference reference = new MockServiceReference();
-		mc.expectAndReturn(actualRegistration.getReference(), reference);
-		actualRegistration.unregister();
-		mc.replay();
+        assertEquals(1, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
+    }
 
-		registration.unregister();
+    @Test
+    public void testExceptionProperlyPropagates() {
+        assertEquals(0, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
+        IllegalStateException excep = new IllegalStateException();
+        expect(actualRegistration.getReference()).andThrow(excep);
 
-		assertEquals(1, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
-	}
-
-	public void testExceptionProperlyPropagates() {
-		assertEquals(0, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
-		IllegalStateException excep = new IllegalStateException();
-		mc.expectAndThrow(actualRegistration.getReference(), excep);
-
-		mc.replay();
-		try {
-			registration.unregister();
-		} catch (IllegalStateException ise) {
-			assertSame(excep, ise);
-		}
-		// check listener hasn't been called
-		assertEquals(0, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
-	}
+        replay(actualRegistration);
+        try {
+            registration.unregister();
+        } catch (IllegalStateException ise) {
+            assertSame(excep, ise);
+        }
+        // check listener hasn't been called
+        assertEquals(0, SimpleOsgiServiceRegistrationListener.UNREGISTERED);
+    }
 }

@@ -7,101 +7,112 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.context;
 
-import junit.framework.TestCase;
-
 import org.eclipse.gemini.blueprint.context.support.internal.scope.OsgiBundleScope;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for OsgiBundleScope.
- * 
+ *
  * @author Costin Leau
- * 
  */
-public class OsgiBundleScopeTest extends TestCase {
+public class OsgiBundleScopeTest {
 
-	ObjectFactory objFactory;
+    ObjectFactory objFactory;
 
-	OsgiBundleScope scope;
+    OsgiBundleScope scope;
 
 
-	/*
-	 * (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		scope = new OsgiBundleScope();
-		OsgiBundleScope.EXTERNAL_BUNDLE.set(null);
-	}
+    /*
+     * (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+        scope = new OsgiBundleScope();
+        OsgiBundleScope.EXTERNAL_BUNDLE.set(null);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	protected void tearDown() throws Exception {
-		objFactory = null;
-		scope.destroy();
-		scope = null;
-	}
+    /*
+     * (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    @After
+    public void tearDown() throws Exception {
+        objFactory = null;
+        scope.destroy();
+        scope = null;
+    }
 
-	public void testLocalBeans() {
-		ObjectFactory factory = new ObjectFactory() {
+    @Test
+    public void testLocalBeans() {
+        ObjectFactory factory = new ObjectFactory() {
 
-			public Object getObject() throws BeansException {
-				return new Object();
-			}
+            public Object getObject() throws BeansException {
+                return new Object();
+            }
 
-		};
-		Object foo = scope.get("foo", factory);
-		Object foo2 = scope.get("foo", factory);
-		assertNotNull(foo);
-		assertSame("instance not cached", foo, foo2);
+        };
+        Object foo = scope.get("foo", factory);
+        Object foo2 = scope.get("foo", factory);
+        assertNotNull(foo);
+        assertSame("instance not cached", foo, foo2);
 
-		Object bar = scope.get("bar", factory);
-		Object bar2 = scope.get("bar", factory);
-		assertNotNull(bar);
-		assertSame("instance not cached", bar, bar2);
-	}
+        Object bar = scope.get("bar", factory);
+        Object bar2 = scope.get("bar", factory);
+        assertNotNull(bar);
+        assertSame("instance not cached", bar, bar2);
+    }
 
-	public void testIsExternalBundleCalling() {
-		assertFalse(OsgiBundleScope.EXTERNAL_BUNDLE.get() != null);
-		OsgiBundleScope.EXTERNAL_BUNDLE.set(new Object());
-		assertTrue(OsgiBundleScope.EXTERNAL_BUNDLE.get() != null);
-	}
+    @Test
+    public void testIsExternalBundleCalling() {
+        assertFalse(OsgiBundleScope.EXTERNAL_BUNDLE.get() != null);
+        OsgiBundleScope.EXTERNAL_BUNDLE.set(new Object());
+        assertTrue(OsgiBundleScope.EXTERNAL_BUNDLE.get() != null);
+    }
 
-	public void testLocalDestructionCallback() {
+    @Test
+    public void testLocalDestructionCallback() {
 
-		final Object[] callbackCalls = new Object[1];
+        final Object[] callbackCalls = new Object[1];
 
-		scope.registerDestructionCallback("foo", new Runnable() {
+        scope.registerDestructionCallback("foo", new Runnable() {
 
-			public void run() {
-				callbackCalls[0] = Boolean.TRUE;
-			}
-		});
+            public void run() {
+                callbackCalls[0] = Boolean.TRUE;
+            }
+        });
 
-		scope.destroy();
-		assertSame(Boolean.TRUE, callbackCalls[0]);
-	}
+        scope.destroy();
+        assertSame(Boolean.TRUE, callbackCalls[0]);
+    }
 
-	public void testDestructionCallbackPassedAround() {
-		OsgiBundleScope.EXTERNAL_BUNDLE.set(new Object());
+    @Test
+    public void testDestructionCallbackPassedAround() {
+        OsgiBundleScope.EXTERNAL_BUNDLE.set(new Object());
 
-		Runnable callback = new Runnable() {
+        Runnable callback = new Runnable() {
 
-			public void run() {
-			}
-		};
+            public void run() {
+            }
+        };
 
-		scope.registerDestructionCallback("foo", callback);
-		assertSame(callback, OsgiBundleScope.EXTERNAL_BUNDLE.get());
-	}
+        scope.registerDestructionCallback("foo", callback);
+        assertSame(callback, OsgiBundleScope.EXTERNAL_BUNDLE.get());
+    }
 }

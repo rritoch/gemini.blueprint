@@ -7,118 +7,118 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.compendium.internal.cm;
 
+import org.eclipse.gemini.blueprint.util.internal.MapBasedDictionary;
+import org.junit.Test;
+
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.eclipse.gemini.blueprint.util.internal.MapBasedDictionary;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Costin Leau
- * 
  */
-public class UpdateMethodAdapterTest extends TestCase {
+public class UpdateMethodAdapterTest {
 
-	public class NoMethod {
+    public class NoMethod {
 
-	}
+    }
 
-	public static class OneMapMethod {
+    public static class OneMapMethod {
 
-		public static int INVOCATIONS = 0;
-
-
-		public void update(Map properties) {
-			INVOCATIONS++;
-		}
-	}
-
-	public static class OneDictionaryMethod {
-
-		public static int INVOCATIONS = 0;
+        public static int INVOCATIONS = 0;
 
 
-		public void dictMethod(Dictionary properties) {
-			INVOCATIONS++;
-		}
-	}
+        public void update(Map properties) {
+            INVOCATIONS++;
+        }
+    }
 
-	public static class BothMethods {
+    public static class OneDictionaryMethod {
 
-		public static int INVOCATIONS = 0;
-
-
-		public void update(Dictionary prop) {
-			INVOCATIONS++;
-		}
-
-		public void update(Map properties) {
-			INVOCATIONS++;
-		}
-	}
-
-	public class NonPublicMethod {
-
-		void update(Map props) {
-		}
-	}
+        public static int INVOCATIONS = 0;
 
 
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
+        public void dictMethod(Dictionary properties) {
+            INVOCATIONS++;
+        }
+    }
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
+    public static class BothMethods {
 
-	public void testDetermineUpdateMethodWNoMethod() {
-		assertTrue(UpdateMethodAdapter.determineUpdateMethod(NoMethod.class, "update").isEmpty());
-	}
+        public static int INVOCATIONS = 0;
 
-	public void testDetermineUpdateMethodWMapMethod() {
-		assertEquals(1, UpdateMethodAdapter.determineUpdateMethod(OneMapMethod.class, "update").size());
-	}
 
-	public void testDetermineUpdateMethodWDictMethod() {
-		assertEquals(1, UpdateMethodAdapter.determineUpdateMethod(OneDictionaryMethod.class, "dictMethod").size());
-	}
+        public void update(Dictionary prop) {
+            INVOCATIONS++;
+        }
 
-	public void testDetermineUpdateMethodWBothMethod() {
-		assertEquals(2, UpdateMethodAdapter.determineUpdateMethod(BothMethods.class, "update").size());
-	}
+        public void update(Map properties) {
+            INVOCATIONS++;
+        }
+    }
 
-	public void testDetermineUpdateMethodWNonPublicMethod() {
-		assertTrue(UpdateMethodAdapter.determineUpdateMethod(NonPublicMethod.class, "update").isEmpty());
-	}
+    public class NonPublicMethod {
 
-	public void testInvokeCustomMethodsOnMapMethod() {
-		OneMapMethod.INVOCATIONS = 0;
-		Map methods = UpdateMethodAdapter.determineUpdateMethod(OneMapMethod.class, "update");
-		UpdateMethodAdapter.invokeCustomMethods(new OneMapMethod(), methods, new HashMap());
-		assertEquals(1, OneMapMethod.INVOCATIONS);
-	}
+        void update(Map props) {
+        }
+    }
 
-	public void testInvokeCustomMethodsOnDictMethod() {
-		OneDictionaryMethod.INVOCATIONS = 0;
-		Map methods = UpdateMethodAdapter.determineUpdateMethod(OneDictionaryMethod.class, "dictMethod");
-		UpdateMethodAdapter.invokeCustomMethods(new OneDictionaryMethod(), methods, new MapBasedDictionary());
-		assertEquals(1, OneDictionaryMethod.INVOCATIONS);
-	}
+    @Test
+    public void testDetermineUpdateMethodWNoMethod() {
+        assertTrue(UpdateMethodAdapter.determineUpdateMethod(NoMethod.class, "update").isEmpty());
+    }
 
-	public void testInvokeCustomMethodsOnBothMethod() {
-		BothMethods.INVOCATIONS = 0;
-		Map methods = UpdateMethodAdapter.determineUpdateMethod(BothMethods.class, "update");
-		UpdateMethodAdapter.invokeCustomMethods(new BothMethods(), methods, new MapBasedDictionary());
-		assertEquals(2, BothMethods.INVOCATIONS);
-	}
+    @Test
+    public void testDetermineUpdateMethodWMapMethod() {
+        assertEquals(1, UpdateMethodAdapter.determineUpdateMethod(OneMapMethod.class, "update").size());
+    }
+
+    @Test
+    public void testDetermineUpdateMethodWDictMethod() {
+        assertEquals(1, UpdateMethodAdapter.determineUpdateMethod(OneDictionaryMethod.class, "dictMethod").size());
+    }
+
+    @Test
+    public void testDetermineUpdateMethodWBothMethod() {
+        assertEquals(2, UpdateMethodAdapter.determineUpdateMethod(BothMethods.class, "update").size());
+    }
+
+    @Test
+    public void testDetermineUpdateMethodWNonPublicMethod() {
+        assertTrue(UpdateMethodAdapter.determineUpdateMethod(NonPublicMethod.class, "update").isEmpty());
+    }
+
+    @Test
+    public void testInvokeCustomMethodsOnMapMethod() {
+        OneMapMethod.INVOCATIONS = 0;
+        Map methods = UpdateMethodAdapter.determineUpdateMethod(OneMapMethod.class, "update");
+        UpdateMethodAdapter.invokeCustomMethods(new OneMapMethod(), methods, new HashMap());
+        assertEquals(1, OneMapMethod.INVOCATIONS);
+    }
+
+    @Test
+    public void testInvokeCustomMethodsOnDictMethod() {
+        OneDictionaryMethod.INVOCATIONS = 0;
+        Map methods = UpdateMethodAdapter.determineUpdateMethod(OneDictionaryMethod.class, "dictMethod");
+        UpdateMethodAdapter.invokeCustomMethods(new OneDictionaryMethod(), methods, new MapBasedDictionary());
+        assertEquals(1, OneDictionaryMethod.INVOCATIONS);
+    }
+
+    @Test
+    public void testInvokeCustomMethodsOnBothMethod() {
+        BothMethods.INVOCATIONS = 0;
+        Map methods = UpdateMethodAdapter.determineUpdateMethod(BothMethods.class, "update");
+        UpdateMethodAdapter.invokeCustomMethods(new BothMethods(), methods, new MapBasedDictionary());
+        assertEquals(2, BothMethods.INVOCATIONS);
+    }
 }

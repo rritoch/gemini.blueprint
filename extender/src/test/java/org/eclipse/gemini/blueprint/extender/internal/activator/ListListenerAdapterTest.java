@@ -28,16 +28,18 @@ import org.eclipse.gemini.blueprint.context.event.OsgiBundleApplicationContextLi
 import org.eclipse.gemini.blueprint.context.event.OsgiBundleContextClosedEvent;
 import org.eclipse.gemini.blueprint.context.support.OsgiBundleXmlApplicationContext;
 import org.eclipse.gemini.blueprint.extender.event.BootstrappingDependenciesEvent;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
 
-public class ListListenerAdapterTest extends TestCase {
+public class ListListenerAdapterTest {
 
     private final class TestBundleContext extends MockBundleContext {
 
@@ -94,21 +96,20 @@ public class ListListenerAdapterTest extends TestCase {
 
     private ListListenerAdapter adapter;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         fired = false;
         ctx = new TestBundleContext();
         adapter = new ListListenerAdapter(ctx);
         adapter.afterPropertiesSet();
     }
     
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         adapter.destroy();
-        super.tearDown();
     }
 
+    @Test
     public void testNormal() throws Exception {
 
         OsgiBundleApplicationContextListener<OsgiBundleApplicationContextEvent> listener = new OsgiBundleApplicationContextListener<OsgiBundleApplicationContextEvent>() {
@@ -125,6 +126,7 @@ public class ListListenerAdapterTest extends TestCase {
         Assert.assertTrue(fired);
     }
 
+    @Test
     public void testEventFiltering() throws Exception {
 
         OsgiBundleApplicationContextListener<OsgiBundleContextClosedEvent> listener = new OsgiBundleApplicationContextListener<OsgiBundleContextClosedEvent>() {

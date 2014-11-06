@@ -7,54 +7,58 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.blueprint.config;
 
-import junit.framework.TestCase;
-
 import org.eclipse.gemini.blueprint.context.support.BundleContextAwareProcessor;
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
 import org.springframework.util.ObjectUtils;
 
+import static org.junit.Assert.assertTrue;
+
 /**
- * 
  * @author Costin Leau
- * 
  */
-public class NestedElementsTest extends TestCase {
+public class NestedElementsTest {
 
-	private static final String CONFIG = "nested-elements.xml";
+    private static final String CONFIG = "nested-elements.xml";
 
-	private GenericApplicationContext context;
-	private XmlBeanDefinitionReader reader;
-	private MockBundleContext bundleContext;
+    private GenericApplicationContext context;
+    private XmlBeanDefinitionReader reader;
+    private MockBundleContext bundleContext;
 
 
-	protected void setUp() throws Exception {
-		bundleContext = new MockBundleContext();
-		context = new GenericApplicationContext();
-		context.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
-		context.setClassLoader(getClass().getClassLoader());
-		reader = new XmlBeanDefinitionReader(context);
-		reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
-		context.refresh();
-	}
+    @Before
+    public void setUp() throws Exception {
+        bundleContext = new MockBundleContext();
+        context = new GenericApplicationContext();
+        context.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
+        context.setClassLoader(getClass().getClassLoader());
+        reader = new XmlBeanDefinitionReader(context);
+        reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
+        context.refresh();
+    }
 
-	protected void tearDown() throws Exception {
-		context.close();
-		context = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        context.close();
+        context = null;
+    }
 
-	public void testNumberOfBeans() throws Exception {
-		System.out.println("The beans declared are: " + ObjectUtils.nullSafeToString(context.getBeanDefinitionNames()));
-		assertTrue("not enough beans found", context.getBeanDefinitionCount() > 3);
-	}
+    @Test
+    public void testNumberOfBeans() throws Exception {
+        System.out.println("The beans declared are: " + ObjectUtils.nullSafeToString(context.getBeanDefinitionNames()));
+        assertTrue("not enough beans found", context.getBeanDefinitionCount() > 3);
+    }
 
 }

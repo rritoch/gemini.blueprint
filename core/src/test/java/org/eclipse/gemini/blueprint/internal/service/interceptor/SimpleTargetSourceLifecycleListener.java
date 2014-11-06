@@ -7,43 +7,42 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.internal.service.interceptor;
 
-import java.util.Map;
-
 import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
+
+import java.util.Map;
 
 /**
  * @author Costin Leau
- * 
  */
 public class SimpleTargetSourceLifecycleListener implements OsgiServiceLifecycleListener {
 
-	public static int BIND = 0;
+    public static int BIND = 0;
 
-	public static int UNBIND = 0;
+    public static int UNBIND = 0;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.gemini.blueprint.service.OsgiServiceLifecycleListener#bind(java.lang.Object,
-	 * java.util.Map)
-	 */
-	public void bind(Object service, Map properties) throws Exception {
-		BIND++;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.gemini.blueprint.service.OsgiServiceLifecycleListener#bind(java.lang.Object,
+     * java.util.Map)
+     */
+    public void bind(Object service, Map properties) throws Exception {
+        BIND++;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.gemini.blueprint.service.OsgiServiceLifecycleListener#unbind(java.lang.Object,
-	 * java.util.Map)
-	 */
-	public void unbind(Object service, Map properties) throws Exception {
-		UNBIND++;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.gemini.blueprint.service.OsgiServiceLifecycleListener#unbind(java.lang.Object,
+     * java.util.Map)
+     */
+    public void unbind(Object service, Map properties) throws Exception {
+        UNBIND++;
+    }
 
 }

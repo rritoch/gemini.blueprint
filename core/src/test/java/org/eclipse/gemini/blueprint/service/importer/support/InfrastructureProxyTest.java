@@ -7,103 +7,111 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service.importer.support;
 
-import java.io.Serializable;
-
-import junit.framework.TestCase;
-
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.eclipse.gemini.blueprint.mock.MockServiceReference;
 import org.eclipse.gemini.blueprint.service.importer.ImportedOsgiServiceProxy;
-import org.eclipse.gemini.blueprint.service.importer.support.ImportContextClassLoaderEnum;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.springframework.core.InfrastructureProxy;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
-import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+
+import java.io.Serializable;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test regarding the importers proxies and spring infrastructure proxy.
- * 
+ *
  * @author Costin Leau
  */
-public class InfrastructureProxyTest extends TestCase {
+public class InfrastructureProxyTest {
 
-	private StaticServiceProxyCreator proxyCreator;
+    private StaticServiceProxyCreator proxyCreator;
 
-	private final Class<?>[] classes = new Class<?>[] { Serializable.class, Comparable.class };
+    private final Class<?>[] classes = new Class<?>[]{Serializable.class, Comparable.class};
 
-	private StaticServiceProxyCreator createProxyCreator(BundleContext ctx, Class<?>[] classes) {
-		ClassLoader cl = getClass().getClassLoader();
-		if (ctx == null) {
-			ctx = new MockBundleContext();
-		}
-		return new StaticServiceProxyCreator(classes, cl, cl, ctx, ImportContextClassLoaderEnum.UNMANAGED, true, false);
-	}
+    private StaticServiceProxyCreator createProxyCreator(BundleContext ctx, Class<?>[] classes) {
+        ClassLoader cl = getClass().getClassLoader();
+        if (ctx == null) {
+            ctx = new MockBundleContext();
+        }
+        return new StaticServiceProxyCreator(classes, cl, cl, ctx, ImportContextClassLoaderEnum.UNMANAGED, true, false);
+    }
 
-	protected void setUp() throws Exception {
-		proxyCreator = createProxyCreator(null, classes);
-	}
+    @Before
+    public void setUp() throws Exception {
+        proxyCreator = createProxyCreator(null, classes);
+    }
 
-	protected void tearDown() throws Exception {
-		proxyCreator = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        proxyCreator = null;
+    }
 
-	public void testCreatedProxy() throws Exception {
-		MockServiceReference ref = new MockServiceReference();
+    @Test
+    public void testCreatedProxy() throws Exception {
+        MockServiceReference ref = new MockServiceReference();
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
-		assertTrue(proxy instanceof ImportedOsgiServiceProxy);
-		assertTrue(proxy instanceof InfrastructureProxy);
-	}
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        assertTrue(proxy instanceof ImportedOsgiServiceProxy);
+        assertTrue(proxy instanceof InfrastructureProxy);
+    }
 
-	public void testTargetProxy() throws Exception {
-		final MockServiceReference ref = new MockServiceReference();
-		final Object service = new Object();
+    @Test
+    public void testTargetProxy() throws Exception {
+        final MockServiceReference ref = new MockServiceReference();
+        final Object service = new Object();
 
-		MockBundleContext ctx = new MockBundleContext() {
+        MockBundleContext ctx = new MockBundleContext() {
 
-			public ServiceReference getServiceReference(String clazz) {
-				return ref;
-			}
+            public ServiceReference getServiceReference(String clazz) {
+                return ref;
+            }
 
-			public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-				return new ServiceReference[] { ref };
-			}
+            public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+                return new ServiceReference[]{ref};
+            }
 
-			public Object getService(ServiceReference reference) {
-				return (reference == ref ? service : super.getService(reference));
-			}
-		};
+            public Object getService(ServiceReference reference) {
+                return (reference == ref ? service : super.getService(reference));
+            }
+        };
 
-		proxyCreator = createProxyCreator(ctx, classes);
-		InfrastructureProxy proxy = (InfrastructureProxy) proxyCreator.createServiceProxy(ref).proxy;
-		assertEquals(service, proxy.getWrappedObject());
-		InfrastructureProxy anotherProxy =
-				(InfrastructureProxy) proxyCreator.createServiceProxy(new MockServiceReference()).proxy;
-		assertFalse(proxy.equals(anotherProxy));
-		assertFalse(anotherProxy.getWrappedObject().equals(proxy.getWrappedObject()));
-	}
+        proxyCreator = createProxyCreator(ctx, classes);
+        InfrastructureProxy proxy = (InfrastructureProxy) proxyCreator.createServiceProxy(ref).proxy;
+        assertEquals(service, proxy.getWrappedObject());
+        InfrastructureProxy anotherProxy =
+                (InfrastructureProxy) proxyCreator.createServiceProxy(new MockServiceReference()).proxy;
+        assertFalse(proxy.equals(anotherProxy));
+        assertFalse(anotherProxy.getWrappedObject().equals(proxy.getWrappedObject()));
+    }
 
-	// FIXME: disabled due to some strange certificates problem with Equinox
-	public void tstBlueprintExceptions() throws Exception {
-		MockServiceReference ref = new MockServiceReference(new String[] { Comparable.class.getName() });
-		MockBundleContext ctx = new MockBundleContext() {
+    // FIXME: disabled due to some strange certificates problem with Equinox
+    public void tstBlueprintExceptions() throws Exception {
+        MockServiceReference ref = new MockServiceReference(new String[]{Comparable.class.getName()});
+        MockBundleContext ctx = new MockBundleContext() {
 
-			@Override
-			public Object getService(ServiceReference reference) {
-				return null;
-			}
-		};
-		ClassLoader cl = getClass().getClassLoader();
-		StaticServiceProxyCreator creator =
-				new StaticServiceProxyCreator(classes, cl, cl, ctx, ImportContextClassLoaderEnum.UNMANAGED, true, true);
-		Comparable proxy = (Comparable) creator.createServiceProxy(ref).proxy;
-		System.out.println(proxy.compareTo(null));
-	}
+            @Override
+            public Object getService(ServiceReference reference) {
+                return null;
+            }
+        };
+        ClassLoader cl = getClass().getClassLoader();
+        StaticServiceProxyCreator creator =
+                new StaticServiceProxyCreator(classes, cl, cl, ctx, ImportContextClassLoaderEnum.UNMANAGED, true, true);
+        Comparable proxy = (Comparable) creator.createServiceProxy(ref).proxy;
+        System.out.println(proxy.compareTo(null));
+    }
 }

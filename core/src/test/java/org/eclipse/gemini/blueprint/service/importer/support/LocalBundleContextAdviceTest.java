@@ -7,54 +7,60 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service.importer.support;
 
-import java.lang.reflect.Method;
-
-import junit.framework.TestCase;
-
 import org.eclipse.gemini.blueprint.internal.service.interceptor.MockMethodInvocation;
-import org.eclipse.gemini.blueprint.service.importer.support.LocalBundleContext;
-import org.osgi.framework.BundleContext;
 import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.osgi.framework.BundleContext;
 import org.springframework.util.ReflectionUtils;
 
-public class LocalBundleContextAdviceTest extends TestCase {
+import java.lang.reflect.Method;
 
-	private MockMethodInvocation invocation;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
-	private LocalBundleContextAdvice interceptor;
+public class LocalBundleContextAdviceTest {
 
-	private BundleContext context;
+    private MockMethodInvocation invocation;
 
-	protected void setUp() throws Exception {
-		Method m = ReflectionUtils.findMethod(Object.class, "hashCode");
-		context = new MockBundleContext();
-		interceptor = new LocalBundleContextAdvice(context);
-		
-		invocation = new MockMethodInvocation(m) {
-			public Object proceed() throws Throwable {
-				assertSame("bundle context not set", context, LocalBundleContext.getInvokerBundleContext());
-				return null;
-			}
-		};
+    private LocalBundleContextAdvice interceptor;
 
-	}
+    private BundleContext context;
 
-	protected void tearDown() throws Exception {
-		invocation = null;
-		interceptor = null;
-		context = null;
-	}
+    @Before
+    public void setUp() throws Exception {
+        Method m = ReflectionUtils.findMethod(Object.class, "hashCode");
+        context = new MockBundleContext();
+        interceptor = new LocalBundleContextAdvice(context);
 
-	public void testInvoke() throws Throwable {
-		assertNull(LocalBundleContext.getInvokerBundleContext());
-		interceptor.invoke(invocation);
-	}
+        invocation = new MockMethodInvocation(m) {
+            public Object proceed() throws Throwable {
+                assertSame("bundle context not set", context, LocalBundleContext.getInvokerBundleContext());
+                return null;
+            }
+        };
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        invocation = null;
+        interceptor = null;
+        context = null;
+    }
+
+    @Test
+    public void testInvoke() throws Throwable {
+        assertNull(LocalBundleContext.getInvokerBundleContext());
+        interceptor.invoke(invocation);
+    }
 
 }

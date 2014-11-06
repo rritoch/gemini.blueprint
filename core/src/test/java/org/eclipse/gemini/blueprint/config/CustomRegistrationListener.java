@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -19,28 +19,27 @@ import java.util.Map;
 
 /**
  * Custom class used for testing.
- * 
+ *
  * @author Costin Leau
- * 
  */
 public class CustomRegistrationListener {
 
-	public static int REG_CALLS = 0;
+    public static int REG_CALLS = 0;
 
-	public static int UNREG_CALLS = 0;
+    public static int UNREG_CALLS = 0;
 
-	public static Object SERVICE_UNREG;
+    public static Object SERVICE_UNREG;
 
-	public static Object SERVICE_REG;
+    public static Object SERVICE_REG;
 
-	public void onRegistration(Object service, Map properties) {
-		REG_CALLS++;
-		SERVICE_REG = service;
-	}
+    public void onRegistration(Object service, Map properties) {
+        REG_CALLS++;
+        SERVICE_REG = service;
+    }
 
-	public void onUnregistration(Object service, Dictionary props) {
-		UNREG_CALLS++;
-		SERVICE_UNREG = service;
-	}
+    public void onUnregistration(Object service, Dictionary props) {
+        UNREG_CALLS++;
+        SERVICE_UNREG = service;
+    }
 
 }

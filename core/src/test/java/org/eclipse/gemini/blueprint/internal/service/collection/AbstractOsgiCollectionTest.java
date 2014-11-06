@@ -7,12 +7,24 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.internal.service.collection;
+
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+import org.eclipse.gemini.blueprint.service.importer.support.internal.aop.ServiceProxyCreator;
+import org.eclipse.gemini.blueprint.service.importer.support.internal.collection.OsgiServiceCollection;
+import org.junit.After;
+import org.junit.Before;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
+import org.springframework.util.ClassUtils;
 
 import java.util.Date;
 import java.util.Dictionary;
@@ -22,153 +34,144 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
-import org.eclipse.gemini.blueprint.service.importer.support.internal.aop.ServiceProxyCreator;
-import org.eclipse.gemini.blueprint.service.importer.support.internal.collection.OsgiServiceCollection;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
-import org.eclipse.gemini.blueprint.mock.MockServiceReference;
-import org.springframework.util.ClassUtils;
-
 /**
  * Base class for Osgi service dynamic collection tests.
- * 
+ *
  * @author Costin Leau
- * 
  */
-public abstract class AbstractOsgiCollectionTest extends TestCase {
+public abstract class AbstractOsgiCollectionTest {
 
-	protected MockBundleContext context;
+    protected MockBundleContext context;
 
-	protected Map services;
+    protected Map services;
 
-	protected OsgiServiceCollection col;
-
-
-	public static interface Wrapper {
-
-		Object execute();
-	}
-
-	public static class DateWrapper implements Wrapper, Comparable {
-
-		private Date date;
+    protected OsgiServiceCollection col;
 
 
-		public DateWrapper(long time) {
-			date = new Date(time);
-		}
+    public static interface Wrapper {
 
-		public Object execute() {
-			return new Long(date.getTime());
-		}
+        Object execute();
+    }
 
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (other instanceof DateWrapper) {
-				DateWrapper oth = (DateWrapper) other;
-				return (date.equals(oth.date));
-			}
-			return false;
-		}
+    public static class DateWrapper implements Wrapper, Comparable {
 
-		public int hashCode() {
-			return DateWrapper.class.hashCode() * 13 + date.hashCode();
-		}
-
-		public int compareTo(Object o) {
-			Wrapper wr = (Wrapper) o;
-			Long time = (Long) wr.execute();
-			return new Long(date.getTime()).compareTo(time);
-		}
-
-	};
+        private Date date;
 
 
-	protected void setUp() throws Exception {
-		services = new LinkedHashMap();
+        public DateWrapper(long time) {
+            date = new Date(time);
+        }
 
-		context = new MockBundleContext() {
+        public Object execute() {
+            return new Long(date.getTime());
+        }
 
-			public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-				return new ServiceReference[0];
-			}
+        public boolean equals(Object other) {
+            if (this == other)
+                return true;
+            if (other instanceof DateWrapper) {
+                DateWrapper oth = (DateWrapper) other;
+                return (date.equals(oth.date));
+            }
+            return false;
+        }
 
-			public Object getService(ServiceReference reference) {
-				Object service = services.get(reference);
-				return (service == null ? new Object() : service);
-			}
-		};
+        public int hashCode() {
+            return DateWrapper.class.hashCode() * 13 + date.hashCode();
+        }
 
-		col = createCollection();
-		col.setRequiredAtStartup(false);
-		col.afterPropertiesSet();
-	}
+        public int compareTo(Object o) {
+            Wrapper wr = (Wrapper) o;
+            Long time = (Long) wr.execute();
+            return new Long(date.getTime()).compareTo(time);
+        }
 
-	abstract OsgiServiceCollection createCollection();
+    }
 
-	protected ServiceProxyCreator createProxyCreator(Class<?>[] classes) {
-		return new SimpleServiceJDKProxyCreator(context, classes, getClass().getClassLoader());
-	}
+    ;
 
-	protected void tearDown() throws Exception {
-		services = null;
-		context = null;
-	}
 
-	protected void addService(Object service, Dictionary properties) {
+    @Before
+    public void setUp() throws Exception {
+        services = new LinkedHashMap();
 
-		ServiceReference ref = null;
-		ServiceEvent event = null;
+        context = new MockBundleContext() {
 
-		Set intfs = ClassUtils.getAllInterfacesAsSet(service);
-		String[] clazzez = new String[intfs.size()];
+            public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+                return new ServiceReference[0];
+            }
 
-		int i = 0;
-		for (Iterator iter = intfs.iterator(); iter.hasNext();) {
-			clazzez[i++] = ((Class) iter.next()).getName();
-		}
+            public Object getService(ServiceReference reference) {
+                Object service = services.get(reference);
+                return (service == null ? new Object() : service);
+            }
+        };
 
-		ref = new MockServiceReference(null, properties, null, clazzez);
+        col = createCollection();
+        col.setRequiredAtStartup(false);
+        col.afterPropertiesSet();
+    }
 
-		event = new ServiceEvent(ServiceEvent.REGISTERED, ref);
+    abstract OsgiServiceCollection createCollection();
 
-		services.put(ref, service);
+    protected ServiceProxyCreator createProxyCreator(Class<?>[] classes) {
+        return new SimpleServiceJDKProxyCreator(context, classes, getClass().getClassLoader());
+    }
 
-		for (Iterator iter = context.getServiceListeners().iterator(); iter.hasNext();) {
-			ServiceListener listener = (ServiceListener) iter.next();
-			listener.serviceChanged(event);
-		}
-	}
+    @After
+    public void tearDown() throws Exception {
+        services = null;
+        context = null;
+    }
 
-	protected void addService(Object service) {
-		addService(service, new Properties());
-	}
+    protected void addService(Object service, Dictionary properties) {
 
-	protected void removeService(Object service) {
-		ServiceReference ref = new MockServiceReference();
+        ServiceReference ref = null;
+        ServiceEvent event = null;
 
-		for (Iterator iter = services.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			if (entry.getValue().equals(service)) {
-				ref = (ServiceReference) entry.getKey();
-				continue;
-			}
-		}
+        Set intfs = ClassUtils.getAllInterfacesAsSet(service);
+        String[] clazzez = new String[intfs.size()];
 
-		services.remove(ref);
+        int i = 0;
+        for (Iterator iter = intfs.iterator(); iter.hasNext(); ) {
+            clazzez[i++] = ((Class) iter.next()).getName();
+        }
 
-		ServiceEvent event = new ServiceEvent(ServiceEvent.UNREGISTERING, ref);
+        ref = new MockServiceReference(null, properties, null, clazzez);
 
-		for (Iterator iter = context.getServiceListeners().iterator(); iter.hasNext();) {
-			ServiceListener listener = (ServiceListener) iter.next();
-			listener.serviceChanged(event);
-		}
+        event = new ServiceEvent(ServiceEvent.REGISTERED, ref);
 
-	}
+        services.put(ref, service);
+
+        for (Iterator iter = context.getServiceListeners().iterator(); iter.hasNext(); ) {
+            ServiceListener listener = (ServiceListener) iter.next();
+            listener.serviceChanged(event);
+        }
+    }
+
+    protected void addService(Object service) {
+        addService(service, new Properties());
+    }
+
+    protected void removeService(Object service) {
+        ServiceReference ref = new MockServiceReference();
+
+        for (Iterator iter = services.entrySet().iterator(); iter.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            if (entry.getValue().equals(service)) {
+                ref = (ServiceReference) entry.getKey();
+                continue;
+            }
+        }
+
+        services.remove(ref);
+
+        ServiceEvent event = new ServiceEvent(ServiceEvent.UNREGISTERING, ref);
+
+        for (Iterator iter = context.getServiceListeners().iterator(); iter.hasNext(); ) {
+            ServiceListener listener = (ServiceListener) iter.next();
+            listener.serviceChanged(event);
+        }
+
+    }
 }

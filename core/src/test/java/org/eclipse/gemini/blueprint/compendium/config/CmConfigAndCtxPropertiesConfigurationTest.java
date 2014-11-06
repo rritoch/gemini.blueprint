@@ -7,20 +7,18 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.compendium.config;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
 import org.eclipse.gemini.blueprint.context.support.BundleContextAwareProcessor;
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
@@ -28,62 +26,59 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author Costin Leau
- * 
  */
-public class CmConfigAndCtxPropertiesConfigurationTest extends TestCase {
+public class CmConfigAndCtxPropertiesConfigurationTest {
 
-	private GenericApplicationContext appContext;
-
-	private BundleContext bundleContext;
-
-	private MockControl adminControl;
-
-	private ConfigurationAdmin admin;
-
-	private Dictionary config;
+    private ConfigurationAdmin admin;
 
 
-	protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        admin = createMock(ConfigurationAdmin.class);
+        Configuration cfg = createMock(Configuration.class);
 
-		adminControl = MockControl.createControl(ConfigurationAdmin.class);
-		admin = (ConfigurationAdmin) adminControl.getMock();
-		MockControl configMock = MockControl.createControl(Configuration.class);
-		Configuration cfg = (Configuration) configMock.getMock();
+        Dictionary config = new Hashtable();
 
-		config = new Hashtable();
+        expect(admin.getConfiguration("com.xyz.myapp")).andReturn(cfg).atLeastOnce();
+        expect(cfg.getProperties()).andReturn(config).atLeastOnce();
 
-		adminControl.expectAndReturn(admin.getConfiguration("com.xyz.myapp"), cfg, MockControl.ONE_OR_MORE);
-		configMock.expectAndReturn(cfg.getProperties(), config, MockControl.ONE_OR_MORE);
+        replay(admin, cfg);
 
-		adminControl.replay();
-		configMock.replay();
+        BundleContext bundleContext = new MockBundleContext() {
 
-		bundleContext = new MockBundleContext() {
+            // add Configuration admin support
+            public Object getService(ServiceReference reference) {
+                return admin;
+            }
+        };
 
-			// add Configuration admin support
-			public Object getService(ServiceReference reference) {
-				return admin;
-			}
-		};
+        GenericApplicationContext appContext = new GenericApplicationContext();
+        appContext.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
 
-		appContext = new GenericApplicationContext();
-		appContext.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(appContext);
+        // reader.setEventListener(this.listener);
+        reader.loadBeanDefinitions(new ClassPathResource("osgiPropertyPlaceholder.xml", getClass()));
+        appContext.refresh();
+    }
 
-		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(appContext);
-		// reader.setEventListener(this.listener);
-		reader.loadBeanDefinitions(new ClassPathResource("osgiPropertyPlaceholder.xml", getClass()));
-		appContext.refresh();
-	}
+    @After
+    public void tearDown() throws Exception {
+        verify(admin);
+    }
 
-	protected void tearDown() throws Exception {
-		adminControl.verify();
-	}
+    @Test
+    public void testValidateConfiguration() throws Exception {
 
-	public void testValidateConfiguration() throws Exception {
-
-	}
+    }
 }

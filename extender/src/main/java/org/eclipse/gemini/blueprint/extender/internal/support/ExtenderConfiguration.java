@@ -35,7 +35,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.timer.TimerTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -173,27 +173,27 @@ public class ExtenderConfiguration implements BundleActivator {
 				extenderConfiguration = extenderAppCtx;
 				// initialize beans
 				taskExecutor =
-						extenderConfiguration.containsBean(TASK_EXECUTOR_NAME) ? (TaskExecutor) extenderConfiguration
+						extenderConfiguration.containsBean(TASK_EXECUTOR_NAME) ? extenderConfiguration
 								.getBean(TASK_EXECUTOR_NAME, TaskExecutor.class) : createDefaultTaskExecutor();
 
 				shutdownTaskExecutor =
-						extenderConfiguration.containsBean(SHUTDOWN_TASK_EXECUTOR_NAME) ? (TaskExecutor) extenderConfiguration
+						extenderConfiguration.containsBean(SHUTDOWN_TASK_EXECUTOR_NAME) ? extenderConfiguration
 								.getBean(SHUTDOWN_TASK_EXECUTOR_NAME, TaskExecutor.class)
 								: createDefaultShutdownTaskExecutor();
 
 				eventMulticaster =
-						extenderConfiguration.containsBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME) ? (OsgiBundleApplicationContextEventMulticaster) extenderConfiguration
+						extenderConfiguration.containsBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME) ? extenderConfiguration
 								.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
 										OsgiBundleApplicationContextEventMulticaster.class)
 								: createDefaultEventMulticaster();
 
 				contextCreator =
-						extenderConfiguration.containsBean(CONTEXT_CREATOR_NAME) ? (OsgiApplicationContextCreator) extenderConfiguration
+						extenderConfiguration.containsBean(CONTEXT_CREATOR_NAME) ? extenderConfiguration
 								.getBean(CONTEXT_CREATOR_NAME, OsgiApplicationContextCreator.class)
 								: null;
 
 				contextEventListener =
-						extenderConfiguration.containsBean(CONTEXT_LISTENER_NAME) ? (OsgiBundleApplicationContextListener) extenderConfiguration
+						extenderConfiguration.containsBean(CONTEXT_LISTENER_NAME) ? extenderConfiguration
 								.getBean(CONTEXT_LISTENER_NAME, OsgiBundleApplicationContextListener.class)
 								: createDefaultApplicationContextListener();
 			}
@@ -209,7 +209,7 @@ public class ExtenderConfiguration implements BundleActivator {
 			// extender properties using the defaults as backup
 			if (extenderConfiguration.containsBean(PROPERTIES_NAME)) {
 				Properties customProperties =
-						(Properties) extenderConfiguration.getBean(PROPERTIES_NAME, Properties.class);
+                        extenderConfiguration.getBean(PROPERTIES_NAME, Properties.class);
 				Enumeration<?> propertyKey = customProperties.propertyNames();
 				while (propertyKey.hasMoreElements()) {
 					String property = (String) propertyKey.nextElement();
@@ -308,7 +308,7 @@ public class ExtenderConfiguration implements BundleActivator {
 			}
 		}
 
-		return (String[]) urls.toArray(new String[urls.size()]);
+		return urls.toArray(new String[urls.size()]);
 	}
 
 	private Properties createDefaultProperties() {
@@ -376,13 +376,11 @@ public class ExtenderConfiguration implements BundleActivator {
 	}
 
 	private TaskExecutor createDefaultShutdownTaskExecutor() {
-		TimerTaskExecutor taskExecutor = new TimerTaskExecutor() {
-			@Override
-			protected Timer createTimer() {
-				return new Timer("Gemini Blueprint context shutdown thread", true);
-			}
-		};
-
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setDaemon(true);
+        taskExecutor.setCorePoolSize(2);
+        taskExecutor.setMaxPoolSize(3);
+        taskExecutor.setThreadNamePrefix("Gemini Blueprint context shutdown thread");
 		taskExecutor.afterPropertiesSet();
 		isShutdownTaskExecutorManagedInternally = true;
 		return taskExecutor;
@@ -410,7 +408,7 @@ public class ExtenderConfiguration implements BundleActivator {
 	}
 
 	private boolean getProcessAnnotations(Properties properties) {
-		return Boolean.valueOf(properties.getProperty(PROCESS_ANNOTATIONS_KEY)).booleanValue()
+		return Boolean.valueOf(properties.getProperty(PROCESS_ANNOTATIONS_KEY))
 				|| Boolean.getBoolean(AUTO_ANNOTATION_PROCESSING);
 	}
 

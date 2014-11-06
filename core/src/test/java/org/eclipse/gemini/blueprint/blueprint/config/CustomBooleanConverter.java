@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -22,22 +22,22 @@ import org.osgi.service.blueprint.container.ReifiedType;
  */
 public class CustomBooleanConverter implements Converter {
 
-	public Object convert(Object source, ReifiedType toType) throws Exception {
-		if (source instanceof String && toType.getRawClass() == Boolean.class) {
-			String strValue = (String) source;
-			if (strValue.equals("T")) {
-				return new Boolean(true);
-			} else if (strValue.equals("F")) {
-				return new Boolean(false);
-			}
-			// this make the module context only support converting T/F to Boolean?
-		}
+    public Object convert(Object source, ReifiedType toType) throws Exception {
+        if (source instanceof String && toType.getRawClass() == Boolean.class) {
+            String strValue = (String) source;
+            if (strValue.equals("T")) {
+                return new Boolean(true);
+            } else if (strValue.equals("F")) {
+                return new Boolean(false);
+            }
+            // this make the module context only support converting T/F to Boolean?
+        }
 
-		// we're supposed to throw an exception if we can't convert
-		throw new Exception("Unconvertable object type");
-	}
+        // we're supposed to throw an exception if we can't convert
+        throw new Exception("Unconvertable object type");
+    }
 
-	public boolean canConvert(Object value, ReifiedType toType) {
-		return toType.getRawClass() == Boolean.class && value instanceof String;
-	}
+    public boolean canConvert(Object value, ReifiedType toType) {
+        return toType.getRawClass() == Boolean.class && value instanceof String;
+    }
 }

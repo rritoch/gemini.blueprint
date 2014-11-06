@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -21,19 +21,19 @@ import java.io.Serializable;
  */
 public class InitializedBean implements Serializable {
 
-	private final String name;
-	private volatile boolean init = false;
+    private final String name;
+    private volatile boolean init = false;
 
-	public InitializedBean(String name) {
-		this.name = name;
-	}
+    public InitializedBean(String name) {
+        this.name = name;
+    }
 
-	public void init() {
-		init = true;
-		System.out.println("Initialized " + name);
-	}
+    public void init() {
+        init = true;
+        System.out.println("Initialized " + name);
+    }
 
-	public boolean isInitialized() {
-		return init;
-	}
+    public boolean isInitialized() {
+        return init;
+    }
 }

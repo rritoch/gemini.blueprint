@@ -7,144 +7,159 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.mock;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.osgi.framework.ServiceReference;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-import org.eclipse.gemini.blueprint.mock.MockServiceReference;
-import org.eclipse.gemini.blueprint.mock.MockServiceRegistration;
-import org.osgi.framework.ServiceReference;
+import static org.easymock.EasyMock.createMock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * @author Costin Leau
- * 
  */
-public class MockServiceRegistrationTest extends TestCase {
+public class MockServiceRegistrationTest {
 
-	MockServiceRegistration mock;
+    private MockServiceRegistration mock;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		mock = new MockServiceRegistration();
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Before
+    public void setUp() throws Exception {
+        mock = new MockServiceRegistration();
+    }
 
-	/**
-	 * Test method for
-	 * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#MockServiceRegistration()}.
-	 */
-	public void testMockServiceRegistration() {
-		assertNotNull(mock.getReference());
-		assertNotNull(mock.getReference().getPropertyKeys());
-	}
+    /**
+     * Test method for
+     * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#MockServiceRegistration()}.
+     */
+    @Test
+    public void testMockServiceRegistration() {
+        assertNotNull(mock.getReference());
+        assertNotNull(mock.getReference().getPropertyKeys());
+    }
 
-	/**
-	 * Test method for
-	 * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#MockServiceRegistration(java.util.Hashtable)}.
-	 */
-	public void testMockServiceRegistrationHashtable() {
-		Dictionary props = new Hashtable();
-		Object value = new Object();
-		props.put("foo", value);
+    /**
+     * Test method for
+     * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#MockServiceRegistration(java.util.Dictionary)}.
+     */
+    @Test
+    public void testMockServiceRegistrationHashtable() {
+        Dictionary props = new Hashtable();
+        Object value = new Object();
+        props.put("foo", value);
 
-		assertNotNull(mock.getReference());
-		mock = new MockServiceRegistration(props);
-		assertSame(value, mock.getReference().getProperty("foo"));
-	}
+        assertNotNull(mock.getReference());
+        mock = new MockServiceRegistration(props);
+        assertSame(value, mock.getReference().getProperty("foo"));
+    }
 
-	/**
-	 * Test method for
-	 * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#getReference()}.
-	 */
-	public void testGetReference() {
-		assertNotNull(mock.getReference());
-	}
+    /**
+     * Test method for
+     * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#getReference()}.
+     */
+    @Test
+    public void testGetReference() {
+        assertNotNull(mock.getReference());
+    }
 
-	/**
-	 * Test method for
-	 * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#setReference(org.osgi.framework.ServiceReference)}.
-	 */
-	public void testSetReference() {
-		ServiceReference ref = new MockServiceReference();
-		mock.setReference(ref);
-		assertSame(ref, mock.getReference());
-	}
+    /**
+     * Test method for
+     * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#setReference(org.osgi.framework.ServiceReference)}.
+     */
+    @Test
+    public void testSetReference() {
+        ServiceReference ref = new MockServiceReference();
+        mock.setReference(ref);
+        assertSame(ref, mock.getReference());
+    }
 
-	/**
-	 * Test method for
-	 * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#setProperties(java.util.Dictionary)}.
-	 */
-	public void testSetProperties() {
-		Dictionary props = new Hashtable();
-		Object value = new Object();
-		String key = "foo";
-		props.put(key, value);
+    /**
+     * Test method for
+     * {@link org.eclipse.gemini.blueprint.mock.MockServiceRegistration#setProperties(java.util.Dictionary)}.
+     */
+    @Test
+    public void testSetProperties() {
+        Dictionary props = new Hashtable();
+        Object value = new Object();
+        String key = "foo";
+        props.put(key, value);
 
-		assertNull(mock.getReference().getProperty(key));
-		mock.setProperties(props);
-		assertSame(value, mock.getReference().getProperty(key));
-		mock.setReference((ServiceReference) MockControl.createNiceControl(ServiceReference.class).getMock());
+        assertNull(mock.getReference().getProperty(key));
+        mock.setProperties(props);
+        assertSame(value, mock.getReference().getProperty(key));
+        mock.setReference(createMock(ServiceReference.class));
 
-		try {
-			mock.setProperties(props);
-			fail("should have thrown exception");
-		}
-		catch (RuntimeException ex) {
-			// expected
-		}
-	}
+        try {
+            mock.setProperties(props);
+            fail("should have thrown exception");
+        } catch (RuntimeException ex) {
+            // expected
+        }
+    }
 
-	public void testHashCode() {
-		MockServiceReference ref = new MockServiceReference();
-		mock.setReference(ref);
+    @Test
+    public void testHashCode() {
+        MockServiceReference ref = new MockServiceReference();
+        mock.setReference(ref);
 
-		MockServiceRegistration other = new MockServiceRegistration();
-		other.setReference(ref);
+        MockServiceRegistration other = new MockServiceRegistration();
+        other.setReference(ref);
 
-		assertEquals(mock.hashCode(), other.hashCode());
+        assertEquals(mock.hashCode(), other.hashCode());
 
-	}
+    }
 
-	public void testHashCodeWithDifferentServiceRef() {
-		MockServiceRegistration other = new MockServiceRegistration();
-		assertFalse(mock.hashCode() == other.hashCode());
-	}
+    @Test
+    public void testHashCodeWithDifferentServiceRef() {
+        MockServiceRegistration other = new MockServiceRegistration();
+        assertFalse(mock.hashCode() == other.hashCode());
+    }
 
-	public void testHashCodeSelf() {
-		assertEquals(mock.hashCode(), mock.hashCode());
+    @Test
+    public void testHashCodeSelf() {
+        assertEquals(mock.hashCode(), mock.hashCode());
 
-		mock.setReference(new MockServiceReference());
-		assertEquals(mock.hashCode(), mock.hashCode());
-	}
+        mock.setReference(new MockServiceReference());
+        assertEquals(mock.hashCode(), mock.hashCode());
+    }
 
-	public void testEqualsTrue() {
-		MockServiceReference ref = new MockServiceReference();
-		mock.setReference(ref);
+    @Test
+    public void testEqualsTrue() {
+        MockServiceReference ref = new MockServiceReference();
+        mock.setReference(ref);
 
-		MockServiceRegistration other = new MockServiceRegistration();
-		other.setReference(ref);
+        MockServiceRegistration other = new MockServiceRegistration();
+        other.setReference(ref);
 
-		assertEquals(mock, other);
-	}
+        assertEquals(mock, other);
+    }
 
-	public void testEqualsFalse() {
-		MockServiceRegistration other = new MockServiceRegistration();
-		assertFalse(mock.equals(other));
-	}
+    @Test
+    public void testEqualsFalse() {
+        MockServiceRegistration other = new MockServiceRegistration();
+        assertFalse(mock.equals(other));
+    }
 
-	public void testEqualsThis() {
-		assertEquals(mock, mock);
-	}
+    @Test
+    public void testEqualsThis() {
+        assertEquals(mock, mock);
+    }
 }

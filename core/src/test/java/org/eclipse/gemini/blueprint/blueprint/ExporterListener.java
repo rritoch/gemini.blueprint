@@ -7,33 +7,33 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.blueprint;
 
+import org.osgi.framework.ServiceRegistration;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author Costin Leau
  */
 public class ExporterListener {
 
-	public static final List bind = new ArrayList();
-	public static final List unbind = new ArrayList();
+    public static final List bind = new ArrayList();
+    public static final List unbind = new ArrayList();
 
 
-	public void up(ServiceRegistration reg, Map serviceProperties) {
-		bind.add(reg);
-	}
+    public void up(ServiceRegistration reg, Map serviceProperties) {
+        bind.add(reg);
+    }
 
-	public void down(ServiceRegistration reg, Map serviceProperties) {
-		unbind.add(reg);
-	}
+    public void down(ServiceRegistration reg, Map serviceProperties) {
+        unbind.add(reg);
+    }
 }

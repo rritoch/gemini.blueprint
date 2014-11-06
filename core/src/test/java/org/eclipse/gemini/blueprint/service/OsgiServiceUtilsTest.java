@@ -7,43 +7,42 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.io.Serializable;
+import java.util.Arrays;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Adrian Colyer
  * @author Costin Leau
  * @since 2.0
  */
-public class OsgiServiceUtilsTest extends TestCase {
+public class OsgiServiceUtilsTest {
+    private BundleContext bundleContext;
 
-	private MockControl mockControl;
+    @Before
+    public void setUp() throws Exception {
+        this.bundleContext = createMock(BundleContext.class);
+    }
 
-	private BundleContext bundleContext;
-
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.mockControl = MockControl.createControl(BundleContext.class);
-		this.bundleContext = (BundleContext) this.mockControl.getMock();
-	}
-
-//	public void testGetServiceWithBadFilter() throws InvalidSyntaxException {
+//	@Test public void testGetServiceWithBadFilter() throws InvalidSyntaxException {
 //		this.bundleContext.getServiceReferences(ApplicationContext.class.getName(), "junk-filter");
 //		this.mockControl.setThrowable(new InvalidSyntaxException("aaa", "xxx"));
 //		this.mockControl.replay();
@@ -57,7 +56,7 @@ public class OsgiServiceUtilsTest extends TestCase {
 //		this.mockControl.verify();
 //	}
 //
-//	public void testGetServiceWithOneMatch() throws InvalidSyntaxException {
+//	@Test public void testGetServiceWithOneMatch() throws InvalidSyntaxException {
 //		this.bundleContext.getServiceReferences(ApplicationContext.class.getName(), "");
 //		ServiceReference sRef = getServiceReference();
 //		ServiceReference[] refs = new ServiceReference[] { sRef };
@@ -68,7 +67,7 @@ public class OsgiServiceUtilsTest extends TestCase {
 //		assertSame("Should get the reference returned by osgi", sRef, ret);
 //	}
 //
-//	public void testGetServiceWithNoMatches() throws InvalidSyntaxException {
+//	@Test public void testGetServiceWithNoMatches() throws InvalidSyntaxException {
 //		this.bundleContext.getServiceReferences(ApplicationContext.class.getName(), "");
 //		this.mockControl.setReturnValue(new ServiceReference[0]);
 //		this.mockControl.replay();
@@ -85,7 +84,7 @@ public class OsgiServiceUtilsTest extends TestCase {
 //		this.mockControl.verify();
 //	}
 //
-//	public void testGetServiceWithMultipleMatches() throws InvalidSyntaxException {
+//	@Test public void testGetServiceWithMultipleMatches() throws InvalidSyntaxException {
 //		this.bundleContext.getServiceReferences(ApplicationContext.class.getName(), "");
 //		this.mockControl.setReturnValue(new ServiceReference[2]);
 //		this.mockControl.replay();
@@ -102,7 +101,7 @@ public class OsgiServiceUtilsTest extends TestCase {
 //		this.mockControl.verify();
 //	}
 //
-//	public void testGetServicesWithBadFilter() throws InvalidSyntaxException {
+//	@Test public void testGetServicesWithBadFilter() throws InvalidSyntaxException {
 //		this.bundleContext.getServiceReferences(ApplicationContext.class.getName(), "junk-filter");
 //		this.mockControl.setThrowable(new InvalidSyntaxException("aaa", "xxx"));
 //		this.mockControl.replay();
@@ -116,7 +115,7 @@ public class OsgiServiceUtilsTest extends TestCase {
 //		this.mockControl.verify();
 //	}
 //
-//	public void testGetServicesWithNoMatches() throws InvalidSyntaxException {
+//	@Test public void testGetServicesWithNoMatches() throws InvalidSyntaxException {
 //		this.bundleContext.getServiceReferences(ApplicationContext.class.getName(), "");
 //		this.mockControl.setReturnValue(new ServiceReference[0]);
 //		this.mockControl.replay();
@@ -125,7 +124,7 @@ public class OsgiServiceUtilsTest extends TestCase {
 //		assertEquals("no services should be found", 0, ret.length);
 //	}
 //
-//	public void testGetServicesWithMatches() throws InvalidSyntaxException {
+//	@Test public void testGetServicesWithMatches() throws InvalidSyntaxException {
 //		this.bundleContext.getServiceReferences(ApplicationContext.class.getName(), "");
 //		ServiceReference[] sRefs = new ServiceReference[2];
 //		sRefs[0] = getServiceReference();
@@ -139,41 +138,43 @@ public class OsgiServiceUtilsTest extends TestCase {
 //		assertSame(sRefs[1], ret[1]);
 //	}
 
-	private ServiceReference getServiceReference() {
-		MockControl sRefControl = MockControl.createNiceControl(ServiceReference.class);
-		return (ServiceReference) sRefControl.getMock();
-	}
+    private ServiceReference getServiceReference() {
+        return createNiceMock(ServiceReference.class);
+    }
 
-	public void testSimpleClassDetermination() throws Exception {
-		Class<?>[] classes = new Class<?>[] { Object.class, Serializable.class, Cloneable.class };
-		Class<?>[] expected = new Class<?>[] { Serializable.class, Cloneable.class };
-		Class<?>[] clazz = org.eclipse.gemini.blueprint.util.internal.ClassUtils.removeParents(classes);
+    @Test
+    public void testSimpleClassDetermination() throws Exception {
+        Class<?>[] classes = new Class<?>[]{Object.class, Serializable.class, Cloneable.class};
+        Class<?>[] expected = new Class<?>[]{Serializable.class, Cloneable.class};
+        Class<?>[] clazz = org.eclipse.gemini.blueprint.util.internal.ClassUtils.removeParents(classes);
 
-		assertTrue(Arrays.equals(expected, clazz));
-	}
+        assertTrue(Arrays.equals(expected, clazz));
+    }
 
-	public void testIntefacesAlreadyContainedInTheSpecifiedClass() throws Exception {
-		Class<?>[] classes = new Class<?>[] { Serializable.class, Number.class, Comparable.class, Object.class };
-		Class<?>[] expected = new Class<?>[] { Number.class, Comparable.class };
-		Class<?>[] clazz = org.eclipse.gemini.blueprint.util.internal.ClassUtils.removeParents(classes);
-		assertTrue(Arrays.equals(expected, clazz));
-	}
+    @Test
+    public void testIntefacesAlreadyContainedInTheSpecifiedClass() throws Exception {
+        Class<?>[] classes = new Class<?>[]{Serializable.class, Number.class, Comparable.class, Object.class};
+        Class<?>[] expected = new Class<?>[]{Number.class, Comparable.class};
+        Class<?>[] clazz = org.eclipse.gemini.blueprint.util.internal.ClassUtils.removeParents(classes);
+        assertTrue(Arrays.equals(expected, clazz));
+    }
 
-	public void testMultipleClassesAndInterfaces() throws Exception {
-		Class<?>[] classes = new Class<?>[] { Serializable.class, Number.class, Comparable.class, Object.class, Long.class,
-				Integer.class };
-		Class<?>[] expected = new Class<?>[] { Long.class, Integer.class };
-		Class<?>[] clazz = org.eclipse.gemini.blueprint.util.internal.ClassUtils.removeParents(classes);
-		assertTrue(Arrays.equals(expected, clazz));
-	}
+    @Test
+    public void testMultipleClassesAndInterfaces() throws Exception {
+        Class<?>[] classes = new Class<?>[]{Serializable.class, Number.class, Comparable.class, Object.class, Long.class,
+                Integer.class};
+        Class<?>[] expected = new Class<?>[]{Long.class, Integer.class};
+        Class<?>[] clazz = org.eclipse.gemini.blueprint.util.internal.ClassUtils.removeParents(classes);
+        assertTrue(Arrays.equals(expected, clazz));
+    }
 
-	public void tstProxyCreation() throws Exception {
-		ProxyFactory pf = new ProxyFactory();
-		pf.setInterfaces(new Class<?>[] { Serializable.class, Comparable.class });
-		//pf.setTargetClass(Number.class);
-		pf.setProxyTargetClass(true);
-		Object proxy = pf.getProxy();
-		System.out.println(ObjectUtils.nullSafeToString(ClassUtils.getAllInterfaces(proxy)));
-		assertTrue(proxy instanceof Number);
-	}
+    public void tstProxyCreation() throws Exception {
+        ProxyFactory pf = new ProxyFactory();
+        pf.setInterfaces(new Class<?>[]{Serializable.class, Comparable.class});
+        //pf.setTargetClass(Number.class);
+        pf.setProxyTargetClass(true);
+        Object proxy = pf.getProxy();
+        System.out.println(ObjectUtils.nullSafeToString(ClassUtils.getAllInterfaces(proxy)));
+        assertTrue(proxy instanceof Number);
+    }
 }

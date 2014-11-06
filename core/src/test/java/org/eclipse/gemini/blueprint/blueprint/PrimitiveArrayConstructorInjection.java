@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -19,33 +19,33 @@ package org.eclipse.gemini.blueprint.blueprint;
  */
 public class PrimitiveArrayConstructorInjection {
 
-	private Object obj;
+    private Object obj;
 
-	public PrimitiveArrayConstructorInjection(int[] array) {
-		this.obj = array;
-	}
+    public PrimitiveArrayConstructorInjection(int[] array) {
+        this.obj = array;
+    }
 
-	public PrimitiveArrayConstructorInjection(float[] array) {
-		this.obj = array;
-	}
+    public PrimitiveArrayConstructorInjection(float[] array) {
+        this.obj = array;
+    }
 
-	public PrimitiveArrayConstructorInjection(short[] array) {
-		this.obj = array;
-	}
+    public PrimitiveArrayConstructorInjection(short[] array) {
+        this.obj = array;
+    }
 
-	public PrimitiveArrayConstructorInjection(byte[] array) {
-		this.obj = array;
-	}
+    public PrimitiveArrayConstructorInjection(byte[] array) {
+        this.obj = array;
+    }
 
-	public PrimitiveArrayConstructorInjection(double[] array) {
-		this.obj = array;
-	}
+    public PrimitiveArrayConstructorInjection(double[] array) {
+        this.obj = array;
+    }
 
-	public PrimitiveArrayConstructorInjection(boolean[] array) {
-		this.obj = array;
-	}
+    public PrimitiveArrayConstructorInjection(boolean[] array) {
+        this.obj = array;
+    }
 
-	public Object getObj() {
-		return obj;
-	}
+    public Object getObj() {
+        return obj;
+    }
 }

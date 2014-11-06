@@ -7,47 +7,51 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service.importer;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-import org.eclipse.gemini.blueprint.service.importer.ServiceProxyDestroyedException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
- * 
  * @author Costin Leau
- * 
  */
-public class ServiceProxyDestroyedExceptionTest extends TestCase {
+public class ServiceProxyDestroyedExceptionTest {
 
-	public void testServiceProxyDestroyedException() {
-		ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException();
-		assertNull(exception.getCause());
-		assertNotNull(exception.getMessage());
-	}
+    @Test
+    public void testServiceProxyDestroyedException() {
+        ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException();
+        assertNull(exception.getCause());
+        assertNotNull(exception.getMessage());
+    }
 
-	public void testServiceProxyDestroyedExceptionStringThrowable() {
-		String msg = "msg";
-		Exception ex = new Exception();
-		ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException(msg, ex);
-		assertEquals(msg, exception.getMessage());
-		assertEquals(ex, exception.getCause());
-	}
+    @Test
+    public void testServiceProxyDestroyedExceptionStringThrowable() {
+        String msg = "msg";
+        Exception ex = new Exception();
+        ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException(msg, ex);
+        assertEquals(msg, exception.getMessage());
+        assertEquals(ex, exception.getCause());
+    }
 
-	public void testServiceProxyDestroyedExceptionString() {
-		String msg = "msg";
-		ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException(msg);
-		assertEquals(msg, exception.getMessage());
-	}
+    @Test
+    public void testServiceProxyDestroyedExceptionString() {
+        String msg = "msg";
+        ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException(msg);
+        assertEquals(msg, exception.getMessage());
+    }
 
-	public void testServiceProxyDestroyedExceptionThrowable() {
-		Exception ex = new Exception();
-		ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException(ex);
-		assertEquals(ex, exception.getCause());
-	}
+    @Test
+    public void testServiceProxyDestroyedExceptionThrowable() {
+        Exception ex = new Exception();
+        ServiceProxyDestroyedException exception = new ServiceProxyDestroyedException(ex);
+        assertEquals(ex, exception.getCause());
+    }
 }

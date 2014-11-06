@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   Costin Leau - VMware Inc.
  *****************************************************************************/
@@ -18,7 +18,7 @@ package org.eclipse.gemini.blueprint.blueprint;
  */
 public class SomeCustomType extends CustomType {
 
-	public SomeCustomType(String name) {
-		super(name);
-	}
+    public SomeCustomType(String name) {
+        super(name);
+    }
 }

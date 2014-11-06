@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -22,8 +22,8 @@ import java.util.Comparator;
  */
 public class DummyComparator implements Comparator {
 
-	public int compare(Object o1, Object o2) {
-		return 0;
-	}
+    public int compare(Object o1, Object o2) {
+        return 0;
+    }
 
 }

@@ -33,7 +33,8 @@ import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.BeanReferenceFactoryBean;
+//import org.springframework.beans.factory.config.BeanReferenceFactoryBean;
+import org.eclipse.gemini.blueprint.util.BeanReferenceFactoryBean;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -156,6 +157,7 @@ public abstract class AbstractReferenceDefinitionParser extends AbstractBeanDefi
 	 * Get OSGi defaults (in case they haven't been resolved).
 	 * 
 	 * @param document
+     * @param parserContext
 	 * @return
 	 */
 	protected OsgiDefaultsDefinition resolveDefaults(Document document, ParserContext parserContext) {
@@ -188,7 +190,7 @@ public abstract class AbstractReferenceDefinitionParser extends AbstractBeanDefi
 			String value = element.getAttribute(AbstractBeanDefinitionParser.ID_ATTRIBUTE);
 			value = (StringUtils.hasText(value) ? value + BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR : "");
 			String generatedName = generateBeanName(value, def, parserContext);
-			// make the bean lazy (since it is an inner bean initiallly)
+			// make the bean lazy (since it is an inner bean initially)
 			def.setLazyInit(true);
 			// disable autowiring for promoted bean
 			def.setAutowireCandidate(false);

@@ -7,143 +7,152 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service.importer;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-
 import junit.framework.TestCase;
-
-import org.easymock.MockControl;
 import org.eclipse.gemini.blueprint.TestUtils;
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.eclipse.gemini.blueprint.mock.MockServiceReference;
 import org.eclipse.gemini.blueprint.service.ServiceUnavailableException;
-import org.eclipse.gemini.blueprint.service.importer.OsgiServiceLifecycleListener;
 import org.eclipse.gemini.blueprint.service.importer.support.Availability;
 import org.eclipse.gemini.blueprint.service.importer.support.MemberType;
 import org.eclipse.gemini.blueprint.service.importer.support.OsgiServiceCollectionProxyFactoryBean;
 import org.eclipse.gemini.blueprint.util.OsgiFilterUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
-import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import static org.easymock.EasyMock.createMock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * @author Costin Leau
- * 
  */
-public class OsgiServiceCollectionProxyFactoryBeanTest extends TestCase {
+public class OsgiServiceCollectionProxyFactoryBeanTest {
 
-	private OsgiServiceCollectionProxyFactoryBean serviceFactoryBean;
+    private OsgiServiceCollectionProxyFactoryBean serviceFactoryBean;
 
-	private MockBundleContext bundleContext;
+    private MockBundleContext bundleContext;
 
-	private ServiceReference ref;
+    private ServiceReference ref;
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.serviceFactoryBean = new OsgiServiceCollectionProxyFactoryBean();
-		// this.serviceFactoryBean.setApplicationContext(new
-		// GenericApplicationContext());
+    @Before
+    public void setUp() throws Exception {
+        this.serviceFactoryBean = new OsgiServiceCollectionProxyFactoryBean();
+        // this.serviceFactoryBean.setApplicationContext(new
+        // GenericApplicationContext());
 
-		ref = new MockServiceReference(new String[] { Runnable.class.getName() });
+        ref = new MockServiceReference(new String[]{Runnable.class.getName()});
 
-		bundleContext = new MockBundleContext() {
+        bundleContext = new MockBundleContext() {
 
-			private final String filter_Serializable = OsgiFilterUtils.unifyFilter(Runnable.class, null);
+            private final String filter_Serializable = OsgiFilterUtils.unifyFilter(Runnable.class, null);
 
-			public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-				if (this.filter_Serializable.equalsIgnoreCase(filter))
-					return new ServiceReference[] { ref };
+            public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+                if (this.filter_Serializable.equalsIgnoreCase(filter))
+                    return new ServiceReference[]{ref};
 
-				return new ServiceReference[0];
-			}
-		};
+                return new ServiceReference[0];
+            }
+        };
 
-		serviceFactoryBean.setBundleContext(this.bundleContext);
-		serviceFactoryBean.setBeanClassLoader(getClass().getClassLoader());
-		serviceFactoryBean.setInterfaces(new Class<?>[] { TestCase.class });
+        serviceFactoryBean.setBundleContext(this.bundleContext);
+        serviceFactoryBean.setBeanClassLoader(getClass().getClassLoader());
+        serviceFactoryBean.setInterfaces(new Class<?>[]{TestCase.class});
 
-	}
+    }
 
-	protected void tearDown() {
-		serviceFactoryBean = null;
-	}
+    @After
+    public void tearDown() {
+        serviceFactoryBean = null;
+    }
 
-	public void testListenersSetOnCollection() throws Exception {
-		serviceFactoryBean.setAvailability(Availability.OPTIONAL);
+    @Test
+    public void testListenersSetOnCollection() throws Exception {
+        serviceFactoryBean.setAvailability(Availability.OPTIONAL);
 
-		OsgiServiceLifecycleListener[] listeners =
-				{ (OsgiServiceLifecycleListener) MockControl.createControl(OsgiServiceLifecycleListener.class)
-						.getMock() };
-		serviceFactoryBean.setListeners(listeners);
-		serviceFactoryBean.afterPropertiesSet();
+        OsgiServiceLifecycleListener[] listeners = {createMock(OsgiServiceLifecycleListener.class)};
+        serviceFactoryBean.setListeners(listeners);
+        serviceFactoryBean.afterPropertiesSet();
 
-		serviceFactoryBean.getObject();
-		Object exposedProxy = TestUtils.getFieldValue(serviceFactoryBean, "exposedProxy");
-		assertSame(listeners, TestUtils.getFieldValue(exposedProxy, "listeners"));
-	}
+        serviceFactoryBean.getObject();
+        Object exposedProxy = TestUtils.getFieldValue(serviceFactoryBean, "exposedProxy");
+        assertSame(listeners, TestUtils.getFieldValue(exposedProxy, "listeners"));
+    }
 
-	public void tstMandatoryServiceAtStartupFailure() throws Exception {
-		serviceFactoryBean.setAvailability(Availability.MANDATORY);
+    public void tstMandatoryServiceAtStartupFailure() throws Exception {
+        serviceFactoryBean.setAvailability(Availability.MANDATORY);
 
-		try {
-			serviceFactoryBean.afterPropertiesSet();
-			Collection col = (Collection) serviceFactoryBean.getObject();
-			col.size();
-			fail("should have thrown exception");
-		} catch (ServiceUnavailableException ex) {
-			// expected
-		}
-	}
+        try {
+            serviceFactoryBean.afterPropertiesSet();
+            Collection col = (Collection) serviceFactoryBean.getObject();
+            col.size();
+            fail("should have thrown exception");
+        } catch (ServiceUnavailableException ex) {
+            // expected
+        }
+    }
 
-	public void testMandatoryServiceAvailableAtStartup() {
-		serviceFactoryBean.setInterfaces(new Class<?>[] { Runnable.class });
-		serviceFactoryBean.afterPropertiesSet();
+    @Test
+    public void testMandatoryServiceAvailableAtStartup() {
+        serviceFactoryBean.setInterfaces(new Class<?>[]{Runnable.class});
+        serviceFactoryBean.afterPropertiesSet();
 
-		assertNotNull(serviceFactoryBean.getObject());
-	}
+        assertNotNull(serviceFactoryBean.getObject());
+    }
 
-	public void testMandatoryServiceUnAvailableWhileWorking() {
-		serviceFactoryBean.setInterfaces(new Class<?>[] { Runnable.class });
-		serviceFactoryBean.afterPropertiesSet();
+    @Test
+    public void testMandatoryServiceUnAvailableWhileWorking() {
+        serviceFactoryBean.setInterfaces(new Class<?>[]{Runnable.class});
+        serviceFactoryBean.afterPropertiesSet();
 
-		Collection col = (Collection) serviceFactoryBean.getObject();
+        Collection col = (Collection) serviceFactoryBean.getObject();
 
-		assertFalse(col.isEmpty());
-		Set listeners = bundleContext.getServiceListeners();
+        assertFalse(col.isEmpty());
+        Set listeners = bundleContext.getServiceListeners();
 
-		ServiceListener list = (ServiceListener) listeners.iterator().next();
-		// disable filter
-		list.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, ref));
-		col.isEmpty();
-	}
+        ServiceListener list = (ServiceListener) listeners.iterator().next();
+        // disable filter
+        list.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, ref));
+        col.isEmpty();
+    }
 
-	public void testServiceReferenceMemberType() throws Exception {
-		serviceFactoryBean.setMemberType(MemberType.SERVICE_REFERENCE);
-		serviceFactoryBean.setInterfaces(new Class<?>[] { Runnable.class });
-		serviceFactoryBean.afterPropertiesSet();
+    @Test
+    public void testServiceReferenceMemberType() throws Exception {
+        serviceFactoryBean.setMemberType(MemberType.SERVICE_REFERENCE);
+        serviceFactoryBean.setInterfaces(new Class<?>[]{Runnable.class});
+        serviceFactoryBean.afterPropertiesSet();
 
-		Collection col = (Collection) serviceFactoryBean.getObject();
+        Collection col = (Collection) serviceFactoryBean.getObject();
 
-		assertFalse(col.isEmpty());
-		assertSame(ref, col.iterator().next());
+        assertFalse(col.isEmpty());
+        assertSame(ref, col.iterator().next());
 
-		Set listeners = bundleContext.getServiceListeners();
-		ServiceListener list = (ServiceListener) listeners.iterator().next();
-		ServiceReference ref2 = new MockServiceReference();
-		list.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref2));
+        Set listeners = bundleContext.getServiceListeners();
+        ServiceListener list = (ServiceListener) listeners.iterator().next();
+        ServiceReference ref2 = new MockServiceReference();
+        list.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, ref2));
 
-		assertEquals(2, col.size());
-		Iterator iter = col.iterator();
-		iter.next();
-		assertSame(ref2, iter.next());
-	}
+        assertEquals(2, col.size());
+        Iterator iter = col.iterator();
+        iter.next();
+        assertSame(ref2, iter.next());
+    }
 }

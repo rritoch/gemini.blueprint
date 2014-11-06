@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -22,15 +22,15 @@ import java.util.Collection;
  */
 public class MyCustomList<E> extends ArrayList<E> {
 
-	public MyCustomList() {
-		super();
-	}
+    public MyCustomList() {
+        super();
+    }
 
-	public MyCustomList(Collection<? extends E> c) {
-		super(c);
-	}
+    public MyCustomList(Collection<? extends E> c) {
+        super(c);
+    }
 
-	public MyCustomList(int initialCapacity) {
-		super(initialCapacity);
-	}
+    public MyCustomList(int initialCapacity) {
+        super(initialCapacity);
+    }
 }

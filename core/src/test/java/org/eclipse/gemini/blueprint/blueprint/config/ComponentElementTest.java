@@ -7,95 +7,108 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.blueprint.config;
 
-import java.util.Arrays;
-import java.util.Properties;
-
-import junit.framework.TestCase;
-
 import org.eclipse.gemini.blueprint.blueprint.TestComponent;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Arrays;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 /**
- * 
  * @author Costin Leau
- * 
  */
-public class ComponentElementTest extends TestCase {
+public class ComponentElementTest {
 
-	private static final String CONFIG = "basic-config.xml";
+    private static final String CONFIG = "basic-config.xml";
 
-	private GenericApplicationContext context;
-	private static String SIMPLE = "simple";
-	private static String DEPENDS_ON = "depends-on";
-	private XmlBeanDefinitionReader reader;
+    private GenericApplicationContext context;
+    private static String SIMPLE = "simple";
+    private static String DEPENDS_ON = "depends-on";
+    private XmlBeanDefinitionReader reader;
 
-	protected void setUp() throws Exception {
-		context = new GenericApplicationContext();
-		context.setClassLoader(getClass().getClassLoader());
-		reader = new XmlBeanDefinitionReader(context);
-		reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
-		context.refresh();
-	}
+    @Before
+    public void setUp() throws Exception {
+        context = new GenericApplicationContext();
+        context.setClassLoader(getClass().getClassLoader());
+        reader = new XmlBeanDefinitionReader(context);
+        reader.loadBeanDefinitions(new ClassPathResource(CONFIG, getClass()));
+        context.refresh();
+    }
 
-	protected void tearDown() throws Exception {
-		context.close();
-		context = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        context.close();
+        context = null;
+    }
 
-	public void testNumberOfBeans() throws Exception {
-		System.out.println("The beans declared are: " + ObjectUtils.nullSafeToString(context.getBeanDefinitionNames()));
-		assertTrue("not enough beans found", context.getBeanDefinitionCount() > 6);
-	}
+    @Test
+    public void testNumberOfBeans() throws Exception {
+        System.out.println("The beans declared are: " + ObjectUtils.nullSafeToString(context.getBeanDefinitionNames()));
+        assertTrue("not enough beans found", context.getBeanDefinitionCount() > 6);
+    }
 
-	public void testSimple() throws Exception {
-		AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition(SIMPLE);
-		assertEquals(Object.class.getName(), def.getBeanClassName());
-	}
+    @Test
+    public void testSimple() throws Exception {
+        AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition(SIMPLE);
+        assertEquals(Object.class.getName(), def.getBeanClassName());
+    }
 
-	public void testDependsOn() throws Exception {
-		AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition(DEPENDS_ON);
-		assertEquals(Object.class.getName(), def.getBeanClassName());
-		assertTrue(Arrays.equals(def.getDependsOn(), new String[] { SIMPLE }));
-	}
+    @Test
+    public void testDependsOn() throws Exception {
+        AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition(DEPENDS_ON);
+        assertEquals(Object.class.getName(), def.getBeanClassName());
+        assertTrue(Arrays.equals(def.getDependsOn(), new String[]{SIMPLE}));
+    }
 
-	public void testDestroyMethod() throws Exception {
-		AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("destroy-method");
-		assertEquals(Properties.class.getName(), def.getBeanClassName());
-		assertEquals("clear", def.getDestroyMethodName());
-	}
+    @Test
+    public void testDestroyMethod() throws Exception {
+        AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("destroy-method");
+        assertEquals(Properties.class.getName(), def.getBeanClassName());
+        assertEquals("clear", def.getDestroyMethodName());
+    }
 
-	public void testLazyInit() throws Exception {
-		AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("lazy-init");
-		assertEquals(Object.class.getName(), def.getBeanClassName());
-		assertTrue(def.isLazyInit());
-	}
+    @Test
+    public void testLazyInit() throws Exception {
+        AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("lazy-init");
+        assertEquals(Object.class.getName(), def.getBeanClassName());
+        assertTrue(def.isLazyInit());
+    }
 
-	public void testFactoryMethod() throws Exception {
-		AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("factory-method");
-		assertEquals(System.class.getName(), def.getBeanClassName());
-		assertEquals("currentTimeMillis", def.getFactoryMethodName());
-	}
+    @Test
+    public void testFactoryMethod() throws Exception {
+        AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("factory-method");
+        assertEquals(System.class.getName(), def.getBeanClassName());
+        assertEquals("currentTimeMillis", def.getFactoryMethodName());
+    }
 
-	public void testFactoryComponent() throws Exception {
-		AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("factory-component");
-		assertNull(def.getBeanClassName());
-		assertEquals("getName", def.getFactoryMethodName());
-		assertEquals("thread", def.getFactoryBeanName());
-	}
+    @Test
+    public void testFactoryComponent() throws Exception {
+        AbstractBeanDefinition def = (AbstractBeanDefinition) context.getBeanDefinition("factory-component");
+        assertNull(def.getBeanClassName());
+        assertEquals("getName", def.getFactoryMethodName());
+        assertEquals("thread", def.getFactoryBeanName());
+    }
 
-	public void tstSelfReferencePrototypeBean() throws Exception {
-		TestComponent cmpn = context.getBean("self-reference", TestComponent.class);
-		assertSame(cmpn, cmpn.getPropA());
-	}
+    public void tstSelfReferencePrototypeBean() throws Exception {
+        TestComponent cmpn = context.getBean("self-reference", TestComponent.class);
+        assertSame(cmpn, cmpn.getPropA());
+    }
 }

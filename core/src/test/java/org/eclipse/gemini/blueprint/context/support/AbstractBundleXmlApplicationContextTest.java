@@ -7,112 +7,116 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.context.support;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
-import org.eclipse.gemini.blueprint.context.support.OsgiBundleXmlApplicationContext;
+import org.easymock.IMocksControl;
 import org.eclipse.gemini.blueprint.util.OsgiStringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.springframework.beans.BeansException;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import static org.easymock.EasyMock.createNiceControl;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+
 /**
- * 
  * @author Costin Leau
  */
-public class AbstractBundleXmlApplicationContextTest extends TestCase {
+public class AbstractBundleXmlApplicationContextTest {
 
-	OsgiBundleXmlApplicationContext xmlContext;
+    OsgiBundleXmlApplicationContext xmlContext;
 
-	MockControl bundleCtxCtrl, bundleCtrl;
+    IMocksControl bundleCtxCtrl, bundleCtrl;
 
-	BundleContext context;
+    BundleContext context;
 
-	Bundle bundle;
+    Bundle bundle;
 
-	Dictionary dictionary;
+    Dictionary dictionary;
 
-	protected void setUp() throws Exception {
-		bundleCtxCtrl = MockControl.createNiceControl(BundleContext.class);
-		context = (BundleContext) bundleCtxCtrl.getMock();
-		bundleCtrl = MockControl.createNiceControl(Bundle.class);
-		bundle = (Bundle) bundleCtrl.getMock();
+    @Before
+    public void setUp() throws Exception {
+        bundleCtxCtrl = createNiceControl();
+        context = bundleCtxCtrl.createMock(BundleContext.class);
+        bundleCtrl = createNiceControl();
+        bundle = bundleCtrl.createMock(Bundle.class);
 
-		bundleCtxCtrl.expectAndReturn(context.getBundle(), bundle, MockControl.ONE_OR_MORE);
+        expect(context.getBundle()).andReturn(bundle).atLeastOnce();
 
-		dictionary = new Hashtable();
+        dictionary = new Hashtable();
 
-		// allow headers to be taken multiple times
-		bundleCtrl.expectAndReturn(bundle.getHeaders(), dictionary, MockControl.ONE_OR_MORE);
-	}
+        // allow headers to be taken multiple times
+        expect(bundle.getHeaders()).andReturn(dictionary).atLeastOnce();
+    }
 
-	private void createContext() {
-		xmlContext = new OsgiBundleXmlApplicationContext(new String[] {}) {
-			public void refresh() throws BeansException {
-				// no-op
-			}
-		};
+    private void createContext() {
+        xmlContext = new OsgiBundleXmlApplicationContext(new String[]{}) {
+            public void refresh() throws BeansException {
+                // no-op
+            }
+        };
         xmlContext.setBundleContext(context);
     }
 
-	protected void tearDown() throws Exception {
-		// bundleCtxCtrl.verify();
-		// bundleCtrl.verify();
-		context = null;
-		bundleCtxCtrl = null;
-		xmlContext = null;
-		bundle = null;
-		bundleCtrl = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        context = null;
+        bundleCtxCtrl = null;
+        xmlContext = null;
+        bundle = null;
+        bundleCtrl = null;
+    }
 
-	public void testGetBundleName() {
-		String symbolicName = "symbolic";
-		// bundleCtrl.reset();
-		bundleCtrl.expectAndReturn(bundle.getSymbolicName(), symbolicName, MockControl.ONE_OR_MORE);
-		bundleCtxCtrl.replay();
-		bundleCtrl.replay();
+    @Test
+    public void testGetBundleName() {
+        String symbolicName = "symbolic";
+        expect(bundle.getSymbolicName()).andReturn(symbolicName).atLeastOnce();
+        bundleCtxCtrl.replay();
+        bundleCtrl.replay();
 
-		// check default
-		createContext();
+        // check default
+        createContext();
 
-		assertEquals(symbolicName, OsgiStringUtils.nullSafeSymbolicName(bundle));
-	}
+        assertEquals(symbolicName, OsgiStringUtils.nullSafeSymbolicName(bundle));
+    }
 
-	public void testGetBundleNameFallbackMechanism() {
-		bundleCtxCtrl.replay();
-		bundleCtrl.replay();
+    @Test
+    public void testGetBundleNameFallbackMechanism() {
+        bundleCtxCtrl.replay();
+        bundleCtrl.replay();
 
-		String title = "Phat City";
-		dictionary.put(Constants.BUNDLE_NAME, title);
+        String title = "Phat City";
+        dictionary.put(Constants.BUNDLE_NAME, title);
 
-		// check default
-		createContext();
+        // check default
+        createContext();
 
-		// use the 2 symbolic name calls
-		assertEquals(title, OsgiStringUtils.nullSafeName(bundle));
-	}
+        // use the 2 symbolic name calls
+        assertEquals(title, OsgiStringUtils.nullSafeName(bundle));
+    }
 
-	public void testGetServiceName() {
-		String symbolicName = "symbolic";
-		// bundleCtrl.reset();
-		bundleCtrl.expectAndReturn(bundle.getSymbolicName(), symbolicName, MockControl.ONE_OR_MORE);
-		bundleCtxCtrl.replay();
-		bundleCtrl.replay();
+    @Test
+    public void testGetServiceName() {
+        String symbolicName = "symbolic";
+        expect(bundle.getSymbolicName()).andReturn(symbolicName).atLeastOnce();
+        bundleCtxCtrl.replay();
+        bundleCtrl.replay();
 
-		createContext();
-		assertEquals(symbolicName, OsgiStringUtils.nullSafeSymbolicName(bundle));
+        createContext();
+        assertEquals(symbolicName, OsgiStringUtils.nullSafeSymbolicName(bundle));
 
-	}
+    }
 
 }

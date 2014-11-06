@@ -7,166 +7,180 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.service.importer.support;
 
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+import org.eclipse.gemini.blueprint.service.importer.ImportedOsgiServiceProxy;
+import org.eclipse.gemini.blueprint.service.importer.ServiceReferenceProxy;
+import org.eclipse.gemini.blueprint.service.importer.support.internal.aop.ServiceProxyCreator;
+import org.eclipse.gemini.blueprint.service.importer.support.internal.collection.OsgiServiceCollection;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.eclipse.gemini.blueprint.service.importer.ImportedOsgiServiceProxy;
-import org.eclipse.gemini.blueprint.service.importer.ServiceReferenceProxy;
-import org.eclipse.gemini.blueprint.service.importer.support.ImportContextClassLoaderEnum;
-import org.eclipse.gemini.blueprint.service.importer.support.internal.aop.ServiceProxyCreator;
-import org.eclipse.gemini.blueprint.service.importer.support.internal.collection.OsgiServiceCollection;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
-import org.eclipse.gemini.blueprint.mock.MockServiceReference;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for the static proxies returned by Osgi collection.
- * 
- * 
+ *
  * @author Costin Leau
- * 
  */
-public class OsgiServiceCollectionProxiesTest extends TestCase {
+public class OsgiServiceCollectionProxiesTest {
 
-	private OsgiServiceCollection col;
+    private OsgiServiceCollection col;
 
-	private Map services;
+    private Map services;
 
-	private String[] classInterfaces = new String[] { Cloneable.class.getName() };
+    private String[] classInterfaces = new String[]{Cloneable.class.getName()};
 
-	private ServiceProxyCreator proxyCreator;
+    private ServiceProxyCreator proxyCreator;
 
-	protected void setUp() throws Exception {
-		services = new LinkedHashMap();
+    @Before
+    public void setUp() throws Exception {
+        services = new LinkedHashMap();
 
-		BundleContext ctx = new MockBundleContext() {
+        BundleContext ctx = new MockBundleContext() {
 
-			public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-				return new ServiceReference[0];
-			}
+            public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+                return new ServiceReference[0];
+            }
 
-			public Object getService(ServiceReference reference) {
-				Object service = services.get(reference);
-				return (service == null ? new Object() : service);
-			}
+            public Object getService(ServiceReference reference) {
+                Object service = services.get(reference);
+                return (service == null ? new Object() : service);
+            }
 
-		};
+        };
 
-		ClassLoader cl = getClass().getClassLoader();
-		proxyCreator =
-				new StaticServiceProxyCreator(new Class<?>[] { Cloneable.class }, cl, cl, ctx,
-						ImportContextClassLoaderEnum.UNMANAGED, false, false);
-	}
+        ClassLoader cl = getClass().getClassLoader();
+        proxyCreator =
+                new StaticServiceProxyCreator(new Class<?>[]{Cloneable.class}, cl, cl, ctx,
+                        ImportContextClassLoaderEnum.UNMANAGED, false, false);
+    }
 
-	protected void tearDown() throws Exception {
-		col = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        col = null;
+    }
 
-	public void testHashCodeBetweenProxyAndTarget() {
-		Date date = new Date(123);
+    @Test
+    public void testHashCodeBetweenProxyAndTarget() {
+        Date date = new Date(123);
 
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
 
-		assertFalse("proxy and service should have different hashcodes", date.hashCode() == proxy.hashCode());
+        assertFalse("proxy and service should have different hashcodes", date.hashCode() == proxy.hashCode());
 
-	}
+    }
 
-	public void testHashCodeBetweenProxies() {
-		Date date = new Date(123);
+    @Test
+    public void testHashCodeBetweenProxies() {
+        Date date = new Date(123);
 
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
-		Object proxy2 = proxyCreator.createServiceProxy(ref).proxy;
-		assertEquals("proxies for the same service should have the same hashcode", proxy.hashCode(), proxy2.hashCode());
-	}
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        Object proxy2 = proxyCreator.createServiceProxy(ref).proxy;
+        assertEquals("proxies for the same service should have the same hashcode", proxy.hashCode(), proxy2.hashCode());
+    }
 
-	public void testEqualsBetweenProxyAndTarget() {
-		Date date = new Date(123);
+    @Test
+    public void testEqualsBetweenProxyAndTarget() {
+        Date date = new Date(123);
 
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
 
-		assertFalse("proxy and service should not be equal", date.equals(proxy));
-	}
+        assertFalse("proxy and service should not be equal", date.equals(proxy));
+    }
 
-	public void testEqualsBetweenProxies() {
-		Date date = new Date(123);
+    @Test
+    public void testEqualsBetweenProxies() {
+        Date date = new Date(123);
 
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
-		Object proxy2 = proxyCreator.createServiceProxy(ref).proxy;
-		assertEquals("proxies for the same target should be equal", proxy, proxy2);
-	}
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        Object proxy2 = proxyCreator.createServiceProxy(ref).proxy;
+        assertEquals("proxies for the same target should be equal", proxy, proxy2);
+    }
 
-	public void testHashCodeBetweenProxyAndItself() {
-		Date date = new Date(123);
+    @Test
+    public void testHashCodeBetweenProxyAndItself() {
+        Date date = new Date(123);
 
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
 
-		assertEquals("proxy should consistent hashcode", proxy.hashCode(), proxy.hashCode());
-	}
+        assertEquals("proxy should consistent hashcode", proxy.hashCode(), proxy.hashCode());
+    }
 
-	public void testEqualsBetweenProxyAndItself() {
-		Date date = new Date(123);
+    @Test
+    public void testEqualsBetweenProxyAndItself() {
+        Date date = new Date(123);
 
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
-		assertEquals("proxy should be equal to itself", proxy, proxy);
-	}
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        assertEquals("proxy should be equal to itself", proxy, proxy);
+    }
 
-	public void testServiceReferenceProxy() throws Exception {
-		Date date = new Date(123);
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+    @Test
+    public void testServiceReferenceProxy() throws Exception {
+        Date date = new Date(123);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
-		assertTrue(proxy instanceof ImportedOsgiServiceProxy);
-		ServiceReferenceProxy referenceProxy = ((ImportedOsgiServiceProxy) proxy).getServiceReference();
-		assertNotNull(referenceProxy);
-		assertSame(ref, referenceProxy.getTargetServiceReference());
-	}
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        assertTrue(proxy instanceof ImportedOsgiServiceProxy);
+        ServiceReferenceProxy referenceProxy = ((ImportedOsgiServiceProxy) proxy).getServiceReference();
+        assertNotNull(referenceProxy);
+        assertSame(ref, referenceProxy.getTargetServiceReference());
+    }
 
-	public void testServiceReferenceProxyEquality() throws Exception {
+    @Test
+    public void testServiceReferenceProxyEquality() throws Exception {
 
-		Date date = new Date(123);
+        Date date = new Date(123);
 
-		ServiceReference ref = new MockServiceReference(classInterfaces);
-		services.put(ref, date);
+        ServiceReference ref = new MockServiceReference(classInterfaces);
+        services.put(ref, date);
 
-		Object proxy = proxyCreator.createServiceProxy(ref).proxy;
-		Object proxy2 = proxyCreator.createServiceProxy(ref).proxy;
+        Object proxy = proxyCreator.createServiceProxy(ref).proxy;
+        Object proxy2 = proxyCreator.createServiceProxy(ref).proxy;
 
-		ServiceReferenceProxy referenceProxy = ((ImportedOsgiServiceProxy) proxy).getServiceReference();
-		assertSame(ref, referenceProxy.getTargetServiceReference());
-		ServiceReferenceProxy referenceProxy2 = ((ImportedOsgiServiceProxy) proxy2).getServiceReference();
-		assertSame(ref, referenceProxy2.getTargetServiceReference());
-		assertEquals(referenceProxy, referenceProxy2);
-		assertFalse(referenceProxy == referenceProxy2);
-	}
+        ServiceReferenceProxy referenceProxy = ((ImportedOsgiServiceProxy) proxy).getServiceReference();
+        assertSame(ref, referenceProxy.getTargetServiceReference());
+        ServiceReferenceProxy referenceProxy2 = ((ImportedOsgiServiceProxy) proxy2).getServiceReference();
+        assertSame(ref, referenceProxy2.getTargetServiceReference());
+        assertEquals(referenceProxy, referenceProxy2);
+        assertFalse(referenceProxy == referenceProxy2);
+    }
 }

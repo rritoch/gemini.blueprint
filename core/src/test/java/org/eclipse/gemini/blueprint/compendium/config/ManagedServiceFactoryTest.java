@@ -7,114 +7,128 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.compendium.config;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Properties;
-
-import junit.framework.TestCase;
-
-import org.easymock.MockControl;
 import org.eclipse.gemini.blueprint.TestUtils;
 import org.eclipse.gemini.blueprint.compendium.internal.cm.ManagedServiceFactoryFactoryBean;
 import org.eclipse.gemini.blueprint.context.support.BundleContextAwareProcessor;
+import org.eclipse.gemini.blueprint.mock.MockBundleContext;
 import org.eclipse.gemini.blueprint.service.exporter.support.DefaultInterfaceDetector;
 import org.eclipse.gemini.blueprint.service.exporter.support.ExportContextClassLoaderEnum;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Map;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Parsing test for ManagedServiceFactory/<managed-service-factory/>
- * 
+ *
  * @author Costin Leau
  */
-public class ManagedServiceFactoryTest extends TestCase {
+public class ManagedServiceFactoryTest {
 
-	private GenericApplicationContext appContext;
+    private GenericApplicationContext appContext;
 
-	protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
-		MockControl mc = MockControl.createNiceControl(Configuration.class);
-		final Configuration cfg = (Configuration) mc.getMock();
-		mc.expectAndReturn(cfg.getProperties(), new Properties());
-		mc.replay();
 
-		BundleContext bundleContext = new MockBundleContext() {
+        final Configuration cfg = createMock(Configuration.class);
+        expect(cfg.getProperties()).andReturn(new Hashtable<String, Object>());
+        replay(cfg);
 
-			// always return a ConfigurationAdmin
-			public Object getService(ServiceReference reference) {
-				return new MockConfigurationAdmin() {
+        BundleContext bundleContext = new MockBundleContext() {
 
-					public Configuration getConfiguration(String pid) throws IOException {
-						return cfg;
-					}
-				};
-			}
-		};
+            // always return a ConfigurationAdmin
+            public Object getService(ServiceReference reference) {
+                return new MockConfigurationAdmin() {
 
-		appContext = new GenericApplicationContext();
-		appContext.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
-		appContext.setClassLoader(getClass().getClassLoader());
+                    public Configuration getConfiguration(String pid) throws IOException {
+                        return cfg;
+                    }
+                };
+            }
+        };
 
-		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(appContext);
-		reader.loadBeanDefinitions(new ClassPathResource("managedServiceFactory.xml", getClass()));
-		appContext.refresh();
-	}
+        appContext = new GenericApplicationContext();
+        appContext.getBeanFactory().addBeanPostProcessor(new BundleContextAwareProcessor(bundleContext));
+        appContext.setClassLoader(getClass().getClassLoader());
 
-	protected void tearDown() throws Exception {
-		appContext.close();
-		appContext = null;
-	}
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(appContext);
+        reader.loadBeanDefinitions(new ClassPathResource("managedServiceFactory.xml", getClass()));
+        appContext.refresh();
+    }
 
-	public void testBasicParsing() throws Exception {
-		Object factory = appContext.getBean("&simple");
-		assertTrue(factory instanceof ManagedServiceFactoryFactoryBean);
-	}
+    @After
+    public void tearDown() throws Exception {
+        appContext.close();
+        appContext = null;
+    }
 
-	public void testBasicExportAttributes() throws Exception {
-		Object factory = appContext.getBean("&simple");
-		Object intfs = TestUtils.getFieldValue(factory, "interfaces");
-		assertTrue(Arrays.equals((Object[]) intfs, new Class<?>[] { Object.class }));
-		Object autoExport = TestUtils.getFieldValue(factory, "detector");
-		assertEquals(DefaultInterfaceDetector.ALL_CLASSES, autoExport);
-	}
+    @Test
+    public void testBasicParsing() throws Exception {
+        Object factory = appContext.getBean("&simple");
+        assertTrue(factory instanceof ManagedServiceFactoryFactoryBean);
+    }
 
-	public void testNestedInterfaceElement() throws Exception {
-		Object factory = appContext.getBean("&ccl");
-		Object intfs = TestUtils.getFieldValue(factory, "interfaces");
-		assertTrue(Arrays.equals((Object[]) intfs, new Class<?>[] { Map.class, Serializable.class }));
-	}
+    @Test
+    public void testBasicExportAttributes() throws Exception {
+        Object factory = appContext.getBean("&simple");
+        Object intfs = TestUtils.getFieldValue(factory, "interfaces");
+        assertTrue(Arrays.equals((Object[]) intfs, new Class<?>[]{Object.class}));
+        Object autoExport = TestUtils.getFieldValue(factory, "detector");
+        assertEquals(DefaultInterfaceDetector.ALL_CLASSES, autoExport);
+    }
 
-	public void testCCLAttribute() throws Exception {
-		Object factory = appContext.getBean("&ccl");
-		Object ccl = TestUtils.getFieldValue(factory, "ccl");
-		assertEquals(ExportContextClassLoaderEnum.SERVICE_PROVIDER, ccl);
-	}
+    @Test
+    public void testNestedInterfaceElement() throws Exception {
+        Object factory = appContext.getBean("&ccl");
+        Object intfs = TestUtils.getFieldValue(factory, "interfaces");
+        assertTrue(Arrays.equals((Object[]) intfs, new Class<?>[]{Map.class, Serializable.class}));
+    }
 
-	public void testContainerUpdateAttr() throws Exception {
-		Object factory = appContext.getBean("&container-update");
-		Object strategy = TestUtils.getFieldValue(factory, "autowireOnUpdate");
-		assertEquals(true, strategy);
-	}
+    @Test
+    public void testCCLAttribute() throws Exception {
+        Object factory = appContext.getBean("&ccl");
+        Object ccl = TestUtils.getFieldValue(factory, "ccl");
+        assertEquals(ExportContextClassLoaderEnum.SERVICE_PROVIDER, ccl);
+    }
 
-	public void testBeanManagedUpdateAttr() throws Exception {
-		Object factory = appContext.getBean("&bean-update");
-		Object strategy = TestUtils.getFieldValue(factory, "autowireOnUpdate");
-		Object method = TestUtils.getFieldValue(factory, "updateMethod");
-		assertEquals(false, strategy);
-		assertEquals("update", method);
-	}
+    @Test
+    public void testContainerUpdateAttr() throws Exception {
+        Object factory = appContext.getBean("&container-update");
+        Object strategy = TestUtils.getFieldValue(factory, "autowireOnUpdate");
+        assertEquals(true, strategy);
+    }
+
+    @Test
+    public void testBeanManagedUpdateAttr() throws Exception {
+        Object factory = appContext.getBean("&bean-update");
+        Object strategy = TestUtils.getFieldValue(factory, "autowireOnUpdate");
+        Object method = TestUtils.getFieldValue(factory, "updateMethod");
+        assertEquals(false, strategy);
+        assertEquals("update", method);
+    }
 }

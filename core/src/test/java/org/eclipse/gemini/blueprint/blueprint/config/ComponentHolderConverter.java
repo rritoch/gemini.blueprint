@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
@@ -19,19 +19,18 @@ import org.osgi.service.blueprint.container.ReifiedType;
 
 /**
  * Dummy converter used for testing.
- * 
+ *
  * @author Costin Leau
- * 
  */
 public class ComponentHolderConverter implements Converter {
 
-	public boolean canConvert(Object fromValue, ReifiedType toType) {
-		return ComponentHolder.class.equals(toType.getRawClass());
-	}
+    public boolean canConvert(Object fromValue, ReifiedType toType) {
+        return ComponentHolder.class.equals(toType.getRawClass());
+    }
 
-	public Object convert(Object fromValue, ReifiedType toType) throws Exception {
-		ComponentHolder comp = new ComponentHolder();
-		comp.setProperty(fromValue);
-		return comp;
-	}
+    public Object convert(Object fromValue, ReifiedType toType) throws Exception {
+        ComponentHolder comp = new ComponentHolder();
+        comp.setProperty(fromValue);
+        return comp;
+    }
 }

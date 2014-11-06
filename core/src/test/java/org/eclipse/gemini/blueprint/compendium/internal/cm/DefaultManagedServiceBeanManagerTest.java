@@ -7,119 +7,134 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.compendium.internal.cm;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.eclipse.gemini.blueprint.TestUtils;
 import org.eclipse.gemini.blueprint.compendium.MultipleSetters;
 import org.eclipse.gemini.blueprint.compendium.OneSetter;
-import org.eclipse.gemini.blueprint.compendium.internal.cm.DefaultManagedServiceBeanManager;
 import org.eclipse.gemini.blueprint.mock.MockBundleContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
- * 
  * @author Costin Leau
- * 
  */
-public class DefaultManagedServiceBeanManagerTest extends TestCase {
+public class DefaultManagedServiceBeanManagerTest {
 
-	private DefaultManagedServiceBeanManager msbm;
-	private ConfigurationAdminManager cam;
-	private Map configuration;
+    private DefaultManagedServiceBeanManager msbm;
+    private ConfigurationAdminManager cam;
+    private Map configuration;
 
-	protected void setUp() throws Exception {
-		cam = new ConfigurationAdminManager("bla", new MockBundleContext()) {
-			public Map getConfiguration() {
-				return configuration;
-			}
-		};
-	}
+    @Before
+    public void setUp() throws Exception {
+        cam = new ConfigurationAdminManager("bla", new MockBundleContext()) {
+            public Map getConfiguration() {
+                return configuration;
+            }
+        };
+    }
 
-	protected void tearDown() throws Exception {
-		msbm = null;
-		cam = null;
-	}
+    @After
+    public void tearDown() throws Exception {
+        msbm = null;
+        cam = null;
+    }
 
-	private Object getUpdateCallback() {
-		return TestUtils.getFieldValue(msbm, "updateCallback");
-	}
+    private Object getUpdateCallback() {
+        return TestUtils.getFieldValue(msbm, "updateCallback");
+    }
 
-	private Map getBeanMap() {
-		return (Map) TestUtils.getFieldValue(msbm, "instanceRegistry");
-	}
+    private Map getBeanMap() {
+        return (Map) TestUtils.getFieldValue(msbm, "instanceRegistry");
+    }
 
-	public void testNoUpdateStrategy() {
-		msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
-		assertNull(getUpdateCallback());
-	}
+    @Test
+    public void testNoUpdateStrategy() {
+        msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
+        assertNull(getUpdateCallback());
+    }
 
-	public void testBeanManagedUpdateStrategy() {
-		msbm = new DefaultManagedServiceBeanManager(false, "update", cam, null);
-		assertTrue(getUpdateCallback().getClass().getName().endsWith("BeanManagedUpdate"));
-	}
+    @Test
+    public void testBeanManagedUpdateStrategy() {
+        msbm = new DefaultManagedServiceBeanManager(false, "update", cam, null);
+        assertTrue(getUpdateCallback().getClass().getName().endsWith("BeanManagedUpdate"));
+    }
 
-	public void testContainerManagedUpdateStrategy() {
-		msbm = new DefaultManagedServiceBeanManager(true, null, cam, null);
-		assertTrue(getUpdateCallback().getClass().getName().endsWith("ContainerManagedUpdate"));
-	}
+    @Test
+    public void testContainerManagedUpdateStrategy() {
+        msbm = new DefaultManagedServiceBeanManager(true, null, cam, null);
+        assertTrue(getUpdateCallback().getClass().getName().endsWith("ContainerManagedUpdate"));
+    }
 
-	public void testChainedManagedUpdateStrategy() {
-		msbm = new DefaultManagedServiceBeanManager(true, "update", cam, null);
-		assertTrue(getUpdateCallback().getClass().getName().endsWith("ChainedManagedUpdate"));
-	}
+    @Test
+    public void testChainedManagedUpdateStrategy() {
+        msbm = new DefaultManagedServiceBeanManager(true, "update", cam, null);
+        assertTrue(getUpdateCallback().getClass().getName().endsWith("ChainedManagedUpdate"));
+    }
 
-	public void testRegister() {
-		configuration = new HashMap();
-		msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
-		Object bean = new Object();
-		assertSame(bean, msbm.register(bean));
-		assertTrue(getBeanMap().containsValue(bean));
-	}
+    @Test
+    public void testRegister() {
+        configuration = new HashMap();
+        msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
+        Object bean = new Object();
+        assertSame(bean, msbm.register(bean));
+        assertTrue(getBeanMap().containsValue(bean));
+    }
 
-	public void testUnregister() {
-		msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
-		Object bean = new Object();
-		assertSame(bean, msbm.register(bean));
-		assertTrue(getBeanMap().containsValue(bean));
-		msbm.unregister(bean);
-		assertFalse(getBeanMap().containsValue(bean));
-	}
+    @Test
+    public void testUnregister() {
+        msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
+        Object bean = new Object();
+        assertSame(bean, msbm.register(bean));
+        assertTrue(getBeanMap().containsValue(bean));
+        msbm.unregister(bean);
+        assertFalse(getBeanMap().containsValue(bean));
+    }
 
-	public void testUpdated() {
-		msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
-	}
+    @Test
+    public void testUpdated() {
+        msbm = new DefaultManagedServiceBeanManager(false, null, cam, null);
+    }
 
-	public void testInjectInfoSimple() {
-		Map props = new HashMap();
-		props.put("prop", "14");
-		OneSetter instance = new OneSetter();
-		msbm = new DefaultManagedServiceBeanManager(true, null, cam, null);
-		msbm.applyInitialInjection(instance, props);
-		assertEquals(new Long(14), instance.getProp());
-	}
+    @Test
+    public void testInjectInfoSimple() {
+        Map props = new HashMap();
+        props.put("prop", "14");
+        OneSetter instance = new OneSetter();
+        msbm = new DefaultManagedServiceBeanManager(true, null, cam, null);
+        msbm.applyInitialInjection(instance, props);
+        assertEquals(new Long(14), instance.getProp());
+    }
 
-	public void testMultipleSetters() {
-		Map props = new HashMap();
-		props.put("prop", "14");
-		props.put("integer", new Double(14));
-		props.put("dbl", new Float(14));
-		props.put("none", "14");
-		props.put("float", "14");
-		MultipleSetters instance = new MultipleSetters();
-		msbm = new DefaultManagedServiceBeanManager(true, null, cam, null);
-		msbm.applyInitialInjection(instance, props);
-		assertEquals(new Double(14), instance.getDbl());
-		assertEquals(14, instance.getInteger());
-		assertEquals(new Long(14), instance.getProp());
-		assertEquals(new Float(0), new Float(instance.getFloat()));
-	}
+    @Test
+    public void testMultipleSetters() {
+        Map props = new HashMap();
+        props.put("prop", "14");
+        props.put("integer", new Double(14));
+        props.put("dbl", new Float(14));
+        props.put("none", "14");
+        props.put("float", "14");
+        MultipleSetters instance = new MultipleSetters();
+        msbm = new DefaultManagedServiceBeanManager(true, null, cam, null);
+        msbm.applyInitialInjection(instance, props);
+        assertEquals(new Double(14), instance.getDbl());
+        assertEquals(14, instance.getInteger());
+        assertEquals(new Long(14), instance.getProp());
+        assertEquals(new Float(0), new Float(instance.getFloat()));
+    }
 }

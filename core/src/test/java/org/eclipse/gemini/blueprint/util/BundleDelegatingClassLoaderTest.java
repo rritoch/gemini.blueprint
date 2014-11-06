@@ -7,15 +7,16 @@
  * http://www.eclipse.org/legal/epl-v10.html and the Apache License v2.0
  * is available at http://www.opensource.org/licenses/apache2.0.php.
  * You may elect to redistribute this code under either of these licenses. 
- * 
+ *
  * Contributors:
  *   VMware Inc.
  *****************************************************************************/
 
 package org.eclipse.gemini.blueprint.util;
 
-import junit.framework.TestCase;
-import org.easymock.MockControl;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.springframework.aop.framework.ProxyFactory;
 
@@ -23,101 +24,97 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.eclipse.gemini.blueprint.util.BundleDelegatingClassLoader.createBundleClassLoaderFor;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Costin Leau
- * 
  */
-public class BundleDelegatingClassLoaderTest extends TestCase {
+@SuppressWarnings("unchecked")
+public class BundleDelegatingClassLoaderTest {
 
-	private BundleDelegatingClassLoader classLoader;
+    private BundleDelegatingClassLoader classLoader;
 
-	private MockControl bundleCtrl;
-
-	private Bundle bundle;
+    private Bundle bundle;
 
     private ClassLoader bridge;
 
-	protected void setUp() throws Exception {
-		bundleCtrl = MockControl.createStrictControl(Bundle.class);
-		bundle = (Bundle) bundleCtrl.getMock();
-		classLoader = createBundleClassLoaderFor(bundle, ProxyFactory.class.getClassLoader());
+    @Before
+    public void setUp() throws Exception {
+        bundle = createMock(Bundle.class);
+        classLoader = createBundleClassLoaderFor(bundle, ProxyFactory.class.getClassLoader());
         bridge = getClass().getClassLoader();
+    }
 
-		bundleCtrl.reset();
-	}
+    @After
+    public void tearDown() throws Exception {
+        verify(bundle);
+        classLoader = null;
+        bundle = null;
+    }
 
-	protected void tearDown() throws Exception {
-		bundleCtrl.verify();
-		classLoader = null;
-		bundleCtrl = null;
-		bundle = null;
-	}
 
-	public void tstEquals() {
-		bundleCtrl.replay();
+    @Test
+    public void testFindClass() throws Exception {
+        String className = "foo.bar";
+        String anotherClassName = "bar.foo";
+        expect(bundle.loadClass(className)).andReturn((Class) Object.class);
 
-		assertFalse(classLoader.equals(new Object()));
-		assertEquals(classLoader, classLoader);
-		assertTrue(classLoader.equals(createBundleClassLoaderFor(bundle, ProxyFactory.class
-                .getClassLoader())));
+        expect(bundle.loadClass(anotherClassName)).andThrow(new ClassNotFoundException());
+        expect(bundle.getSymbolicName()).andReturn("Test Bundle Symbolic Name");
+        replay(bundle);
 
-		// assertEquals(bundle.hashCode(), clientClassLoader.hashCode());
-	}
+        assertSame(Object.class, classLoader.findClass(className));
 
-	public void testFindClass() throws Exception {
-		String className = "foo.bar";
-		String anotherClassName = "bar.foo";
-		bundleCtrl.expectAndReturn(bundle.loadClass(className), Object.class);
-		bundleCtrl.expectAndThrow(bundle.loadClass(anotherClassName), new ClassNotFoundException());
-		bundleCtrl.expectAndReturn(bundle.getSymbolicName(), "Test Bundle Symbolic Name");
-		//bundleCtrl.expectAndReturn(bundle.getHeaders(), new Properties());
-		bundleCtrl.replay();
+        try {
+            classLoader.findClass(anotherClassName);
+        } catch (ClassNotFoundException ex) {
+            // expected
+        }
+    }
 
-		assertSame(Object.class, classLoader.findClass(className));
+    @Test
+    public void testFindResource() throws Exception {
+        String resource = "file://bla-bla";
+        URL url = new URL(resource);
 
-		try {
-			classLoader.findClass(anotherClassName);
-		} catch (ClassNotFoundException ex) {
-			// expected
-		}
-	}
+        expect(bundle.getResource(resource)).andReturn(url);
+        replay(bundle);
 
-	public void testFindResource() throws Exception {
-		String resource = "file://bla-bla";
-		URL url = new URL(resource);
+        assertSame(url, classLoader.findResource(resource));
+    }
 
-		bundleCtrl.expectAndReturn(bundle.getResource(resource), url);
-		bundleCtrl.replay();
+    @Test
+    public void testFindResources() throws Exception {
+        String resource = "bla-bla";
+        Enumeration enumeration = createMock(Enumeration.class);
 
-		assertSame(url, classLoader.findResource(resource));
-	}
+        expect(bundle.getResources(resource)).andReturn(enumeration);
+        replay(bundle);
 
-	public void testFindResources() throws Exception {
-		String resource = "bla-bla";
-		MockControl enumCtrl = MockControl.createStrictControl(Enumeration.class);
-		Enumeration enumeration = (Enumeration) enumCtrl.getMock();
+        assertSame(enumeration, classLoader.findResources(resource));
+    }
 
-		bundleCtrl.expectAndReturn(bundle.getResources(resource), enumeration);
-		bundleCtrl.replay();
-
-		assertSame(enumeration, classLoader.findResources(resource));
-	}
-
+    @Test
     public void testGetResourcesFromBundleAndBridge() throws Exception {
         final String resourceName = "org/eclipse/gemini/blueprint/util/internal/resource.txt";
         final URL bundleURL = new URL("file://bundle/resourceName");
 
-        MockControl bundleResourcesControl = MockControl.createStrictControl(Enumeration.class);
-        Enumeration bundleResources = (Enumeration) bundleResourcesControl.getMock();
-        bundleResourcesControl.expectAndReturn(bundleResources.hasMoreElements(), true, 2);
-        bundleResourcesControl.expectAndReturn(bundleResources.nextElement(), bundleURL);
-        bundleResourcesControl.expectAndReturn(bundleResources.hasMoreElements(), false, 2);
-        bundleResourcesControl.replay();
+        Enumeration bundleResources = createMock(Enumeration.class);
 
-        bundleCtrl.expectAndReturn(bundle.getResources(resourceName), bundleResources);
-        bundleCtrl.replay();
+        expect(bundle.getResources(resourceName)).andReturn(bundleResources);
+        expect(bundleResources.hasMoreElements()).andReturn(true).times(2);
+        expect(bundleResources.nextElement()).andReturn(bundleURL);
+        expect(bundleResources.hasMoreElements()).andReturn(false).times(2);
+
+        replay(bundleResources, bundle);
 
         Enumeration<URL> resources = createBundleClassLoaderFor(bundle, bridge).getResources(resourceName);
 
@@ -130,19 +127,19 @@ public class BundleDelegatingClassLoaderTest extends TestCase {
         assertTrue(resource.getFile().endsWith(resourceName));
     }
 
+    @Test
     public void testGetResourcesFromBundleOnly() throws Exception {
         final String resourceName = "org/eclipse/gemini/blueprint/util/internal/resource.txt";
         final URL bundleURL = new URL("file://bundle/resourceName");
 
-        MockControl bundleResourcesControl = MockControl.createStrictControl(Enumeration.class);
-        Enumeration bundleResources = (Enumeration) bundleResourcesControl.getMock();
-        bundleResourcesControl.expectAndReturn(bundleResources.hasMoreElements(), true);
-        bundleResourcesControl.expectAndReturn(bundleResources.nextElement(), bundleURL);
-        bundleResourcesControl.expectAndReturn(bundleResources.hasMoreElements(), false);
-        bundleResourcesControl.replay();
+        Enumeration bundleResources = createMock(Enumeration.class);
 
-        bundleCtrl.expectAndReturn(bundle.getResources(resourceName), bundleResources);
-        bundleCtrl.replay();
+        expect(bundle.getResources(resourceName)).andReturn(bundleResources);
+        expect(bundleResources.hasMoreElements()).andReturn(true);
+        expect(bundleResources.nextElement()).andReturn(bundleURL);
+        expect(bundleResources.hasMoreElements()).andReturn(false);
+
+        replay(bundleResources, bundle);
 
         Enumeration<URL> resources = createBundleClassLoaderFor(bundle, null).getResources(resourceName);
 
@@ -151,11 +148,12 @@ public class BundleDelegatingClassLoaderTest extends TestCase {
         assertFalse(resources.hasMoreElements());
     }
 
+    @Test
     public void testGetResourcesFromBridgeOnly() throws Exception {
         final String resourceName = "org/eclipse/gemini/blueprint/util/internal/resource.txt";
 
-        bundleCtrl.expectAndReturn(bundle.getResources(resourceName), null);
-        bundleCtrl.replay();
+        expect(bundle.getResources(resourceName)).andReturn(null);
+        replay(bundle);
 
         Enumeration<URL> resources = createBundleClassLoaderFor(bundle, bridge).getResources(resourceName);
         assertTrue(resources.hasMoreElements());
@@ -165,11 +163,12 @@ public class BundleDelegatingClassLoaderTest extends TestCase {
         assertFalse(resources.hasMoreElements());
     }
 
+    @Test
     public void testGetResourcesIsNullSafe() throws IOException {
         final String resourceName = "org/eclipse/gemini/blueprint/util/internal/resource.txt";
 
-        bundleCtrl.expectAndReturn(bundle.getResources(resourceName), null);
-        bundleCtrl.replay();
+        expect(bundle.getResources(resourceName)).andReturn(null);
+        replay(bundle);
 
         Enumeration<URL> resources = createBundleClassLoaderFor(bundle, null).getResources(resourceName);
 
