@@ -1,17 +1,13 @@
 Excluded-Exports: 
  *.internal*
 Import-Template: 
- org.osgi.framework;version=1.3,
+ org.osgi.framework;version=1.7,
  org.osgi.service.cm;version=1.2;resolution:=optional,
  org.osgi.service.packageadmin;version=1.2,
  org.apache.commons.logging.*;version=${logging.version.range},
  org.eclipse.gemini.blueprint.*;version=${gemini.blueprint.version.range},
  org.springframework.*;version=${spring.version.range},
- org.objectweb.*;version="[2,3)";resolution:=optional,
- org.eclipse.*;resolution:=optional,
- org.knopflerfish.*;resolution:=optional,
- org.apache.felix.*;resolution:=optional,
- junit.*;version=3.8,
+ junit.*;version=4.9,
  *;resolution:=optional
 Excluded-Imports: com_cenqua_clover*,
  org.eclipse.gemini.blueprint.extender.internal*,
@@ -35,14 +31,3 @@ Build-Jdk: ${java.version}
 Build-Plan: ${env.buildPlan}
 Build-Number: ${env.buildNumber}
 Git-Revision: ${git.commit.id.describe}
-Ignored-Existing-Headers:
- Ant-Version,
- Archiver-Version,
- Unversioned-Imports,
- Tool,
- Ignore-Package,
- Private-Package,
- Created-By,
- Bnd-LastModified,
- Import-Package,
- Export-Package

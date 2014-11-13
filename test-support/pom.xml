@@ -8,7 +8,6 @@
         <artifactId>gemini-blueprint</artifactId>
         <groupId>org.eclipse.gemini.blueprint</groupId>
         <version>2.0.0.BUILD-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.eclipse.gemini.blueprint</groupId>
@@ -23,46 +22,70 @@
 
     <properties>
         <javadoc.loc>${basedir}/../docs/src/javadoc</javadoc.loc>
-
         <spring.osgi.symbolic.name>${symName.prefix}.test</spring.osgi.symbolic.name>
-
-        <!--<jarjar.run>on</jarjar.run>-->
-        <!--<jarjar.keep>org.eclipse.gemini.blueprint.test.**</jarjar.keep>-->
-        <!--<jarjar.dep>${maven.dependency.org.eclipse.gemini.blueprint.gemini-blueprint-extender.jar.path}</jarjar.dep>-->
-
         <bundle.description>${project.description}</bundle.description>
+        <exam.version>4.3.0</exam.version>
+        <url.version>2.2.0</url.version>
     </properties>
 
     <dependencies>
-
         <dependency>
-            <groupId>org.junit</groupId>
-            <artifactId>com.springsource.org.junit</artifactId>
-            <version>4.9.0</version>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-native</artifactId>
+            <version>${exam.version}</version>
+
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>${exam.version}</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>${exam.version}</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <version>${url.version}</version>
+
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.apache.servicemix.bundles</groupId>-->
+            <!--<artifactId>org.apache.servicemix.bundles.junit</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-test</artifactId>
             <version>${spring.maven.artifact.version}</version>
-            <exclusions>
-                <!-- exclude spring-test junit (3.8.1) -->
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+
         </dependency>
 
-        <dependency>
-            <groupId>org.objectweb.asm</groupId>
-            <artifactId>com.springsource.org.objectweb.asm</artifactId>
-            <version>2.2.3</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.springframework</groupId>-->
+        <!--<artifactId>spring-test</artifactId>-->
+        <!--<version>${spring.maven.artifact.version}</version>-->
+        <!--<exclusions>-->
+        <!--&lt;!&ndash; exclude spring-test junit (3.8.1) &ndash;&gt;-->
+        <!--<exclusion>-->
+        <!--<groupId>junit</groupId>-->
+        <!--<artifactId>junit</artifactId>-->
+        <!--</exclusion>-->
+        <!--<exclusion>-->
+        <!--<groupId>commons-logging</groupId>-->
+        <!--<artifactId>commons-logging</artifactId>-->
+        <!--</exclusion>-->
+        <!--</exclusions>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.eclipse.gemini.blueprint</groupId>
@@ -78,48 +101,48 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>${equinox.ver}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.knopflerfish</groupId>
-            <artifactId>framework</artifactId>
-            <version>${kf.ver}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.main</artifactId>
-            <version>${felix.ver}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.framework</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.shell</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.shell.tui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.bundlerepository</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.osgi</groupId>-->
+        <!--<artifactId>org.eclipse.osgi</artifactId>-->
+        <!--<version>${equinox.ver}</version>-->
+        <!--<type>jar</type>-->
+        <!--<scope>provided</scope>-->
+        <!--<optional>true</optional>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.knopflerfish</groupId>-->
+        <!--<artifactId>framework</artifactId>-->
+        <!--<version>${kf.ver}</version>-->
+        <!--<type>jar</type>-->
+        <!--<scope>provided</scope>-->
+        <!--<optional>true</optional>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.apache.felix</groupId>-->
+        <!--<artifactId>org.apache.felix.main</artifactId>-->
+        <!--<version>${felix.ver}</version>-->
+        <!--<type>jar</type>-->
+        <!--<scope>provided</scope>-->
+        <!--<optional>true</optional>-->
+        <!--<exclusions>-->
+        <!--<exclusion>-->
+        <!--<groupId>org.apache.felix</groupId>-->
+        <!--<artifactId>org.apache.felix.framework</artifactId>-->
+        <!--</exclusion>-->
+        <!--<exclusion>-->
+        <!--<groupId>org.apache.felix</groupId>-->
+        <!--<artifactId>org.apache.felix.shell</artifactId>-->
+        <!--</exclusion>-->
+        <!--<exclusion>-->
+        <!--<groupId>org.apache.felix</groupId>-->
+        <!--<artifactId>org.apache.felix.shell.tui</artifactId>-->
+        <!--</exclusion>-->
+        <!--<exclusion>-->
+        <!--<groupId>org.apache.felix</groupId>-->
+        <!--<artifactId>org.apache.felix.bundlerepository</artifactId>-->
+        <!--</exclusion>-->
+        <!--</exclusions>-->
+        <!--</dependency>-->
 
         <!-- for testing -->
         <dependency>
@@ -128,29 +151,30 @@
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <!-- required since starting multiple osgi platforms inside the same VM might is not recommended -->
-                <!-- (for example multiple URL stream factories might be registered) -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <forkMode>pertest</forkMode>
+        <!--<pluginManagement>-->
+        <!--<plugins>-->
+        <!--&lt;!&ndash; required since starting multiple osgi platforms inside the same VM might is not recommended &ndash;&gt;-->
+        <!--&lt;!&ndash; (for example multiple URL stream factories might be registered) &ndash;&gt;-->
+        <!--<plugin>-->
+        <!--<groupId>org.apache.maven.plugins</groupId>-->
+        <!--<artifactId>maven-surefire-plugin</artifactId>-->
+        <!--<configuration>-->
+        <!--<forkMode>pertest</forkMode>-->
 
-                        <systemProperties>
-                            <property>
-                                <name>org.eclipse.gemini.blueprint.test.framework</name>
-                                <value>${osgi.test.platform}</value>
-                            </property>
-                        </systemProperties>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <!--<systemProperties>-->
+        <!--<property>-->
+        <!--<name>org.eclipse.gemini.blueprint.test.framework</name>-->
+        <!--<value>${osgi.test.platform}</value>-->
+        <!--</property>-->
+        <!--</systemProperties>-->
+        <!--</configuration>-->
+        <!--</plugin>-->
+        <!--</plugins>-->
+        <!--</pluginManagement>-->
 
         <plugins>
             <plugin>
@@ -162,29 +186,29 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-shade-plugin</artifactId>-->
+            <!--<version>2.1</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+            <!--<goal>shade</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
 
-                            <finalName>${project.build.finalName}</finalName>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.eclipse.gemini.blueprint:gemini-blueprint-test</include>
-                                    <include>org.eclipse.gemini.blueprint:gemini-blueprint-extender</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--<finalName>${project.build.finalName}</finalName>-->
+            <!--<artifactSet>-->
+            <!--<includes>-->
+            <!--<include>org.eclipse.gemini.blueprint:gemini-blueprint-test</include>-->
+            <!--<include>org.eclipse.gemini.blueprint:gemini-blueprint-extender</include>-->
+            <!--</includes>-->
+            <!--</artifactSet>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 

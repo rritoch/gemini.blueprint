@@ -30,8 +30,8 @@
 
         <!-- JUnit is required at build time not just test time -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.junit</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
