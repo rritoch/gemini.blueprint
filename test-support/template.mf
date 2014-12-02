@@ -1,18 +1,18 @@
-Excluded-Exports: 
- *.internal*
-Import-Template: 
- org.osgi.framework;version=1.7,
+Excluded-Exports: *.internal*
+Import-Package: org.apache.commons.logging;version="[1.1.1,2)"
+Import-Template: org.osgi.framework;version=1.7,
  org.osgi.service.cm;version=1.2;resolution:=optional,
  org.osgi.service.packageadmin;version=1.2,
- org.apache.commons.logging.*;version=${logging.version.range},
  org.eclipse.gemini.blueprint.*;version=${gemini.blueprint.version.range},
  org.springframework.*;version=${spring.version.range},
- junit.*;version=4.9,
+ org.junit.*;version=4.11,
+ org.ops4j.pax.exam.*;version=4.3,
+ org.ops4j.pax.exam.junit.*;version=4.3;resolution:=optional,
+ org.slf4j.*;version=1.7.7,
  *;resolution:=optional
 Excluded-Imports: com_cenqua_clover*,
  org.eclipse.gemini.blueprint.extender.internal*,
  org.eclipse.gemini.blueprint.extender.support.internal*
-Bundle-Activator: org.eclipse.gemini.blueprint.test.internal.support.Activator
 Bundle-Name: ${project.artifactId}
 Bundle-Version: ${project.version}
 Bundle-SymbolicName: ${spring.osgi.symbolic.name}

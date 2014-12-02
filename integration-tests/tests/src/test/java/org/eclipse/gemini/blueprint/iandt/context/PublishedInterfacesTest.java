@@ -35,6 +35,9 @@ import static org.eclipse.gemini.blueprint.test.BlueprintOptions.blueprintDefaul
 import static org.eclipse.gemini.blueprint.test.BlueprintOptions.withConsole;
 import static org.eclipse.gemini.blueprint.test.BlueprintOptions.withLogging;
 import static org.junit.Assert.assertEquals;
+import static org.ops4j.pax.exam.CoreOptions.options;
+
+//TODO: Revisit this test: OsgiBXAC has more interfaces vs. the annon version.
 
 /**
  * Test checking the context published interfaces.
@@ -43,13 +46,12 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(PaxExam.class)
 @ContextConfiguration
-//        (locations = {"classpath:org/eclipse/gemini/blueprint/iandt/context/no-op-context.xml"})
 public class PublishedInterfacesTest extends AbstractBlueprintTest {
 
 
     @Configuration
     public Option[] config() {
-        return OptionUtils.combine(blueprintDefaults(), withConsole(9999), withLogging(new File(PathUtils.getBaseDir() + "/target/test-classes/logback.xml").toURI()));
+        return options(blueprintDefaults(), withLogging(new File(PathUtils.getBaseDir() + "/target/test-classes/logback.xml").toURI()));
     }
 
     @Test
@@ -78,8 +80,8 @@ public class PublishedInterfacesTest extends AbstractBlueprintTest {
             String[] interfaces = (String[]) serviceReference.getProperty(Constants.OBJECTCLASS);
 
             Arrays.sort(interfaces);
-            logger.error(serviceReference.toString());
-            logger.error(serviceReference.getBundle().getSymbolicName() + " " + interfaces.length + " \n\t" + Arrays.toString(interfaces) );
+//            logger.error(serviceReference.toString());
+//            logger.error(serviceReference.getBundle().getSymbolicName() + " " + interfaces.length + " \n\t" + Arrays.toString(interfaces) );
 //            assertEquals("not enough interfaces published", 13, interfaces.length);
             assertEquals(Version.emptyVersion, serviceReference.getProperty(Constants.BUNDLE_VERSION));
             assertEquals(bundleContext.getBundle().getSymbolicName(),

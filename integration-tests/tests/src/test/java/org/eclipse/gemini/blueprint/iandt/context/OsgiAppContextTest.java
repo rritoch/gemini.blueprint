@@ -31,6 +31,7 @@ import static org.eclipse.gemini.blueprint.test.BlueprintOptions.withConsole;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.ops4j.pax.exam.CoreOptions.options;
 
 /**
  * Integration test on the functionality offered by OSGi app context.
@@ -43,7 +44,7 @@ public class OsgiAppContextTest extends AbstractBlueprintTest {
 
     @Configuration
     public Option[] config() {
-        return OptionUtils.combine(blueprintDefaults(), withConsole(9999));
+        return options(blueprintDefaults());
     }
 
     @Test

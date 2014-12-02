@@ -33,7 +33,7 @@
             <MaxFileSize>100KB</MaxFileSize>
         </triggeringPolicy>
     </appender>
-    <logger name="org.eclipse.gemini.blueprint.context.support" level="INFO"/>
+    <logger name="org.eclipse.gemini.blueprint.context.support" level="WARN"/>
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.eclipse.gemini.blueprint.context.support.DelegatedNamespaceHandlerResolver" level="WARN"/>
     <logger name="org.eclipse.gemini.blueprint.service.exporter.support.internal.support" level="WARN"/>

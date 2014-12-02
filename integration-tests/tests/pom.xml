@@ -70,13 +70,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>net.sourceforge.cglib</groupId>-->
-        <!--<artifactId>com.springsource.net.sf.cglib</artifactId>-->
-        <!--<version>2.2.0</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>gemini-blueprint-core</artifactId>
@@ -129,47 +122,47 @@
         <!--<scope>provided</scope>-->
         <!--</dependency>-->
 
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
-        <!--<artifactId>simple.service</artifactId>-->
-        <!--<version>${project.parent.version}</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>simple.service</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
-        <!--<artifactId>simple.service2</artifactId>-->
-        <!--<version>${project.parent.version}</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>simple.service2</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
-        <!--<artifactId>cardinality0to1</artifactId>-->
-        <!--<version>${project.parent.version}</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>cardinality0to1</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
-        <!--<artifactId>scoped.bundle.a</artifactId>-->
-        <!--<version>${project.parent.version}</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>scoped.bundle.a</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
-        <!--<artifactId>scoped.bundle.b</artifactId>-->
-        <!--<version>${project.parent.version}</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>scoped.bundle.b</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
-        <!--<artifactId>scoped.bundle.common</artifactId>-->
-        <!--<version>${project.parent.version}</version>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>scoped.bundle.common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!--<dependency>-->
         <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
@@ -218,7 +211,6 @@
     <build>
         <plugins>
             <plugin>
-
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
                 <version>1.2</version>
@@ -230,7 +222,10 @@
                         </goals>
                     </execution>
                 </executions>
-
+                <configuration>
+                    <outputFile>${project.build.directory}/test-classes/META-INF/maven/dependencies.properties
+                    </outputFile>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

@@ -13,6 +13,8 @@
  *****************************************************************************/
 package org.eclipse.gemini.blueprint.iandt.context;
 
+import java.io.Serializable;
+
 import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.eclipse.gemini.blueprint.context.ConfigurableOsgiBundleApplicationContext;
 import org.eclipse.gemini.blueprint.test.AbstractBlueprintTest;
@@ -20,19 +22,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.OptionUtils;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.BundleContext;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.Serializable;
-
 import static org.eclipse.gemini.blueprint.test.BlueprintOptions.blueprintDefaults;
-import static org.eclipse.gemini.blueprint.test.BlueprintOptions.withConsole;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.ops4j.pax.exam.CoreOptions.options;
 
 /**
  * Test injection of BundleContextAware.
@@ -63,15 +62,11 @@ public class BundleContextAwareTest extends AbstractBlueprintTest {
 
     @Configuration
     public Option[] config() {
-//        return composite(
-//                blueprintDefaults()
-//        );
-        return OptionUtils.combine(blueprintDefaults(), withConsole(9999));
+        return options(blueprintDefaults());
     }
 
     @Test
     public void testBundleContextAware() throws Exception {
-//        System.in.read();
         BundleContextAwareHolder holder = (BundleContextAwareHolder) applicationContext.getBean("bean");
         assertNotNull(holder.getBundleContext());
         assertSame(bundleContext, holder.getBundleContext());

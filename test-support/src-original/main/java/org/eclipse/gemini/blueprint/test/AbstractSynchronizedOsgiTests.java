@@ -16,7 +16,7 @@ package org.eclipse.gemini.blueprint.test;
 
 import java.util.Enumeration;
 
-import org.eclipse.gemini.blueprint.extender.internal.util.concurrent.Counter;
+import org.eclipse.gemini.blueprint.util.concurrent.Counter;
 import org.eclipse.gemini.blueprint.extender.support.internal.ConfigUtils;
 import org.eclipse.gemini.blueprint.util.OsgiBundleUtils;
 import org.eclipse.gemini.blueprint.util.OsgiListenerUtils;

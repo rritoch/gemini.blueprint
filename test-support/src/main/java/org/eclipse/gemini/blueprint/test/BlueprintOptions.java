@@ -1,12 +1,10 @@
 package org.eclipse.gemini.blueprint.test;
 
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.OptionUtils;
-import org.ops4j.pax.exam.options.DefaultCompositeOption;
-import org.ops4j.pax.exam.util.PathUtils;
-
 import java.io.File;
 import java.net.URI;
+
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.util.PathUtils;
 
 import static org.ops4j.pax.exam.Constants.START_LEVEL_SYSTEM_BUNDLES;
 import static org.ops4j.pax.exam.CoreOptions.*;
@@ -45,8 +43,8 @@ public class BlueprintOptions {
 
     }
 
-    public static Option[] blueprintDefaults() {
-        return OptionUtils.expand(
+    public static Option blueprintDefaults() {
+        return composite(
                 bootDelegationPackages("sun.*",
                         "com.sun.*",
                         "org.w3c.*",
