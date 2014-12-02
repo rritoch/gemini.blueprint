@@ -71,13 +71,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.sourceforge.cglib</groupId>
-            <artifactId>com.springsource.net.sf.cglib</artifactId>
-            <version>2.2.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.eclipse.gemini.blueprint</groupId>
             <artifactId>gemini-blueprint-core</artifactId>
             <scope>provided</scope>
@@ -96,38 +89,38 @@
         </dependency>
 
         <dependency>
-            <groupId>org.aopalliance</groupId>
-            <artifactId>com.springsource.org.aopalliance</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>service.listener</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>service.listener</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>lifecycle</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>lifecycle</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>recursive</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>recursive</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>reference.proxy</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>reference.proxy</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
@@ -167,56 +160,73 @@
         <dependency>
             <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
             <artifactId>scoped.bundle.common</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>configuration</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>configuration</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>dependencies</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>dependencies</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>tccl.intf</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>tccl.intf</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>proxy.listener</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>proxy.listener</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.osgi</groupId>-->
+        <!--<artifactId>org.osgi.compendium</artifactId>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
-            <artifactId>component.scan.bundle</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
+        <!--<artifactId>component.scan.bundle</artifactId>-->
+        <!--<version>${project.parent.version}</version>-->
+        <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
     </dependencies>
 
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>generate-depends-file</id>
+                        <goals>
+                            <goal>generate-depends-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputFile>${project.build.directory}/test-classes/META-INF/maven/dependencies.properties
+                    </outputFile>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
@@ -235,13 +245,17 @@
                             <value>test-config</value>
                         </property>
                         <property>
-                            <name>org.eclipse.gemini.blueprint.test.framework</name>
-                            <value>${osgi.test.platform}</value>
+                            <name>pax.exam.logging</name>
+                            <value>none</value>
                         </property>
-                        <property>
-                            <name>org.springframework.osgi.integration.testing.clover</name>
-                            <value>${clover.enabled}</value>
-                        </property>
+                        <!--<property>-->
+                        <!--<name>org.eclipse.gemini.blueprint.test.framework</name>-->
+                        <!--<value>${osgi.test.platform}</value>-->
+                        <!--</property>-->
+                        <!--<property>-->
+                        <!--<name>org.springframework.osgi.integration.testing.clover</name>-->
+                        <!--<value>${clover.enabled}</value>-->
+                        <!--</property>-->
                     </systemProperties>
                     <argLine>${clover.argLine} ${security.argLine}</argLine>
                     <!--argLine>-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=2111,server=y,suspend=y</argLine-->
