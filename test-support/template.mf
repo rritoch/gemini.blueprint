@@ -8,6 +8,7 @@ Import-Template: org.osgi.framework;version=1.7,
  org.junit.*;version=4.11,
  org.ops4j.pax.exam.*;version=4.3,
  org.ops4j.pax.exam.junit.*;version=4.3;resolution:=optional,
+ org.ops4j.pax.exam.spi.*;version=4.3;resolution:=optional,
  org.slf4j.*;version=1.7.7,
  *;resolution:=optional
 Excluded-Imports: com_cenqua_clover*,

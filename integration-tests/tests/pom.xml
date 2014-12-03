@@ -164,6 +164,19 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>io.fragment.1.bundle</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint.iandt</groupId>
+            <artifactId>io.fragment.2.bundle</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--<dependency>-->
         <!--<groupId>org.eclipse.gemini.blueprint.iandt</groupId>-->
         <!--<artifactId>configuration</artifactId>-->

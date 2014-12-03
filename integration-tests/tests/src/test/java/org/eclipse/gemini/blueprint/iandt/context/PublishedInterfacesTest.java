@@ -51,7 +51,8 @@ public class PublishedInterfacesTest extends AbstractBlueprintTest {
 
     @Configuration
     public Option[] config() {
-        return options(blueprintDefaults(), withLogging(new File(PathUtils.getBaseDir() + "/target/test-classes/logback.xml").toURI()));
+        return options(blueprintDefaults(),
+                withLogging(new File(PathUtils.getBaseDir() + "/target/test-classes/logback.xml").toURI()));
     }
 
     @Test

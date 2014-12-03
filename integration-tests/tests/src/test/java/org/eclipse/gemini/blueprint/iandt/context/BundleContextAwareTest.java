@@ -13,6 +13,7 @@
  *****************************************************************************/
 package org.eclipse.gemini.blueprint.iandt.context;
 
+import java.io.File;
 import java.io.Serializable;
 
 import org.eclipse.gemini.blueprint.context.BundleContextAware;
@@ -25,10 +26,12 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
+import org.ops4j.pax.exam.util.PathUtils;
 import org.osgi.framework.BundleContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.eclipse.gemini.blueprint.test.BlueprintOptions.blueprintDefaults;
+import static org.eclipse.gemini.blueprint.test.BlueprintOptions.withLogging;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -62,7 +65,8 @@ public class BundleContextAwareTest extends AbstractBlueprintTest {
 
     @Configuration
     public Option[] config() {
-        return options(blueprintDefaults());
+        return options(blueprintDefaults(),
+                withLogging(new File(PathUtils.getBaseDir() + "/target/test-classes/logback.xml").toURI()));
     }
 
     @Test

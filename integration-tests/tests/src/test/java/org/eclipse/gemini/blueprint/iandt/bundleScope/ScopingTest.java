@@ -14,6 +14,7 @@
 
 package org.eclipse.gemini.blueprint.iandt.bundleScope;
 
+import java.io.File;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
 import java.security.AllPermission;
@@ -24,6 +25,7 @@ import java.util.Properties;
 import java.util.PropertyPermission;
 
 import org.eclipse.gemini.blueprint.context.ConfigurableOsgiBundleApplicationContext;
+import org.eclipse.gemini.blueprint.iandt.BaseIntegrationTest;
 import org.eclipse.gemini.blueprint.iandt.scope.common.ScopeTestService;
 import org.eclipse.gemini.blueprint.test.AbstractBlueprintTest;
 import org.eclipse.gemini.blueprint.util.OsgiFilterUtils;
@@ -37,6 +39,7 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
+import org.ops4j.pax.exam.util.PathUtils;
 import org.osgi.framework.*;
 import org.osgi.service.permissionadmin.PermissionAdmin;
 import org.osgi.service.permissionadmin.PermissionInfo;
@@ -45,6 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.ObjectUtils;
 
 import static org.eclipse.gemini.blueprint.test.BlueprintOptions.blueprintDefaults;
+import static org.eclipse.gemini.blueprint.test.BlueprintOptions.withLogging;
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -57,7 +61,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
 @ContextConfiguration(locations = {"classpath:org/eclipse/gemini/blueprint/iandt/bundleScope/scope-context.xml"})
-public class ScopingTest extends AbstractBlueprintTest {
+public class ScopingTest extends BaseIntegrationTest {
 
 //    protected String getManifestLocation() {
 //        return "org/eclipse/gemini/blueprint/iandt/bundleScope/ScopingTest.MF";
@@ -65,40 +69,16 @@ public class ScopingTest extends AbstractBlueprintTest {
 
     @Configuration
     public Option[] config() {
-        return options(blueprintDefaults(),
+        return options(
+                blueprintDefaults(),
+                withLogging(new File(PathUtils.getBaseDir() + "/target/test-classes/logback.xml").toURI()),
                 mavenBundle("org.eclipse.gemini.blueprint.iandt", "scoped.bundle.common").versionAsInProject(),
                 mavenBundle("org.eclipse.gemini.blueprint.iandt", "scoped.bundle.a").versionAsInProject(),
                 mavenBundle("org.eclipse.gemini.blueprint.iandt", "scoped.bundle.b").versionAsInProject());
     }
 
-    @Before
-    public void beforeEach() {
-        PermissionAdmin pa;
-        ServiceReference<PermissionAdmin> ref = bundleContext.getServiceReference(PermissionAdmin.class);
-
-        if (ref != null) {
-            logger.trace("Found permission admin " + ref);
-            pa = bundleContext.getService(ref);
-//            bc.addBundleListener(this);
-            logger.trace("Default permissions are " + ObjectUtils.nullSafeToString(pa.getDefaultPermissions()));
-            logger.warn("Security turned ON");
-
-            pa.setPermissions(bundleContext.getBundle().getLocation(), getPIFromPermissions(getTestPermissions()));
-        }
-
-    }
-
-    private PermissionInfo[] getPIFromPermissions(List<Permission> perms) {
-        PermissionInfo[] pi = new PermissionInfo[perms.size()];
-        int index = 0;
-        for (Permission perm : perms) {
-            pi[index++] = new PermissionInfo(perm.getClass().getName(), perm.getName(), perm.getActions());
-        }
-        return pi;
-    }
 
     @Test
-    //@Ignore("Failing for some reason")
     public void testEnvironmentValidity() throws Exception {
         assertNotNull(getServiceA());
         assertNotNull(getServiceB());
@@ -124,7 +104,6 @@ public class ScopingTest extends AbstractBlueprintTest {
     }
 
     @Test
-    //@Ignore("Failing for some reason")
     public void testServiceAScopeForBundleB() throws Exception {
         String symName = "org.eclipse.gemini.blueprint.iandt.scope.b";
         ScopeTestService serviceAInBundleB = (ScopeTestService) getAppCtx(symName).getBean("serviceFromA");
@@ -134,7 +113,6 @@ public class ScopingTest extends AbstractBlueprintTest {
     }
 
     @Test
-    //@Ignore("Failing for some reason")
     public void testServiceBInBundleBAndTestBundle() throws Exception {
         ScopeTestService serviceAInBundleB = (ScopeTestService) org.eclipse.gemini.blueprint.iandt.scope.b.BeanReference.BEAN;
 
@@ -243,50 +221,9 @@ public class ScopingTest extends AbstractBlueprintTest {
      * privileges.
      */
     protected List<Permission> getTestPermissions() {
-        List<Permission> perms = getTestPermissionsP();
+        List<Permission> perms = super.getTestPermissions();
         perms.add(new AdminPermission("(name=org.eclipse.gemini.blueprint.iandt.scope.a)", "*"));
         perms.add(new AllPermission());
-        return perms;
-    }
-
-    protected List<Permission> getTestPermissionsP() {
-        List<Permission> perms = new ArrayList<Permission>();
-        perms.add(new PackagePermission("*", PackagePermission.EXPORT));
-        perms.add(new PackagePermission("*", PackagePermission.IMPORT));
-        perms.add(new BundlePermission("*", BundlePermission.HOST));
-        perms.add(new BundlePermission("*", BundlePermission.PROVIDE));
-        perms.add(new BundlePermission("*", BundlePermission.REQUIRE));
-        perms.add(new ServicePermission("*", ServicePermission.REGISTER));
-        perms.add(new ServicePermission("*", ServicePermission.GET));
-        perms.add(new PropertyPermission("*", "read,write"));
-        // required by Spring
-        perms.add(new RuntimePermission("*", "accessDeclaredMembers"));
-        perms.add(new ReflectPermission("*", "suppressAccessChecks"));
-        // logging permission
-        perms.add(new FilePermission("-", "write"));
-        perms.add(new FilePermission("-", "read"));
-        return perms;
-    }
-
-    protected List<Permission> getIAndTPermissions() {
-        List<Permission> perms = new ArrayList<Permission>();
-        // export package
-        perms.add(new PackagePermission("*", PackagePermission.EXPORT));
-        perms.add(new PackagePermission("*", PackagePermission.IMPORT));
-        perms.add(new BundlePermission("*", BundlePermission.FRAGMENT));
-        perms.add(new BundlePermission("*", BundlePermission.PROVIDE));
-        perms.add(new ServicePermission("*", ServicePermission.REGISTER));
-        perms.add(new ServicePermission("*", ServicePermission.GET));
-        perms.add(new PropertyPermission("*", "read,write"));
-
-        // required by Spring
-        perms.add(new RuntimePermission("*", "accessDeclaredMembers"));
-        perms.add(new ReflectPermission("*", "suppressAccessChecks"));
-
-        // logging permission
-        perms.add(new FilePermission("-", "write"));
-        perms.add(new FilePermission("-", "read"));
-
         return perms;
     }
 }

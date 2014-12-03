@@ -15,6 +15,13 @@
 
 package org.eclipse.gemini.blueprint.iandt.cardinality0to1;
 
+import java.io.File;
+import java.io.FilePermission;
+import java.security.Permission;
+import java.util.List;
+import java.util.PropertyPermission;
+
+import org.eclipse.gemini.blueprint.iandt.BaseIntegrationTest;
 import org.eclipse.gemini.blueprint.iandt.cardinality0to1.test.MyListener;
 import org.eclipse.gemini.blueprint.iandt.cardinality0to1.test.ReferenceContainer;
 import org.eclipse.gemini.blueprint.service.ServiceUnavailableException;
@@ -26,11 +33,14 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
+import org.ops4j.pax.exam.util.PathUtils;
+import org.osgi.framework.AdminPermission;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.eclipse.gemini.blueprint.test.BlueprintOptions.blueprintDefaults;
+import static org.eclipse.gemini.blueprint.test.BlueprintOptions.withLogging;
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -41,15 +51,12 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
 @ContextConfiguration(locations = {"classpath:org/eclipse/gemini/blueprint/iandt/bundleScope/scope-context.xml"})
-public class Cardinality0to1Test extends AbstractBlueprintTest {
+public class Cardinality0to1Test extends BaseIntegrationTest {
 
-    //	protected String[] getTestBundlesNames() {
-//		return new String[] { "org.eclipse.gemini.blueprint.iandt, simple.service," + getSpringDMVersion(),
-//			"org.eclipse.gemini.blueprint.iandt, cardinality0to1," + getSpringDMVersion() };
-//	}
     @Configuration
     public Option[] config() {
         return options(blueprintDefaults(),
+                withLogging(new File(PathUtils.getBaseDir() + "/target/test-classes/logback.xml").toURI()),
                 mavenBundle("org.eclipse.gemini.blueprint.iandt", "simple.service").versionAsInProject(),
                 mavenBundle("org.eclipse.gemini.blueprint.iandt", "cardinality0to1").versionAsInProject());
     }
@@ -58,9 +65,6 @@ public class Cardinality0to1Test extends AbstractBlueprintTest {
     public void test0to1Cardinality() throws Exception {
 
         String url = mavenBundle("org.eclipse.gemini.blueprint.iandt", "simple.service2").versionAsInProject().getURL();
-
-//		Bundle simpleService2Bundle = bundleContext.installBundle(getLocator().locateArtifact(
-//			"org.eclipse.gemini.blueprint.iandt", "simple.service2", getSpringDMVersion()).getURL().toExternalForm());
 
         Bundle simpleService2Bundle = bundleContext.installBundle(url);
 
@@ -98,22 +102,22 @@ public class Cardinality0to1Test extends AbstractBlueprintTest {
         System.out.println("Dependency started");
     }
 
-//	protected List getIAndTPermissions() {
-//		List perms = super.getIAndTPermissions();
-//		// export package
-//		perms.add(new PropertyPermission("*", "read"));
-//		perms.add(new PropertyPermission("*", "write"));
-//		return perms;
-//	}
-//
-//	protected List getTestPermissions() {
-//		List perms = super.getTestPermissions();
-//		perms.add(new FilePermission("<<ALL FILES>>", "read"));
-//		perms.add(new AdminPermission("*", AdminPermission.EXECUTE));
-//		perms.add(new AdminPermission("*", AdminPermission.LIFECYCLE));
-//		perms.add(new AdminPermission("*", AdminPermission.RESOLVE));
-//		perms.add(new PropertyPermission("*", "read"));
-//		perms.add(new PropertyPermission("*", "write"));
-//		return perms;
-//	}
+	protected List<Permission> getIAndTPermissions() {
+		List<Permission> perms = super.getIAndTPermissions();
+		// export package
+		perms.add(new PropertyPermission("*", "read"));
+		perms.add(new PropertyPermission("*", "write"));
+		return perms;
+	}
+
+	protected List<Permission> getTestPermissions() {
+		List<Permission> perms = super.getTestPermissions();
+		perms.add(new FilePermission("<<ALL FILES>>", "read"));
+		perms.add(new AdminPermission("*", AdminPermission.EXECUTE));
+		perms.add(new AdminPermission("*", AdminPermission.LIFECYCLE));
+		perms.add(new AdminPermission("*", AdminPermission.RESOLVE));
+		perms.add(new PropertyPermission("*", "read"));
+		perms.add(new PropertyPermission("*", "write"));
+		return perms;
+	}
 }
