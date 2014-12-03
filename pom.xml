@@ -231,9 +231,7 @@
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-                <!--<version>${spring.maven.artifact.version}</version>-->
-                <!-- this one is special -->
-                <version>4.1.1.RELEASE_2</version>
+                <version>${spring.maven.artifact.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
