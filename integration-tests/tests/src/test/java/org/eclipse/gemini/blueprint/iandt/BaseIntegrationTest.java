@@ -147,4 +147,9 @@ public abstract class BaseIntegrationTest extends AbstractBlueprintTest {
         return perms;
     }
 
+
+    protected String[] getBundleContentPattern() {
+        String pkg = getClass().getPackage().getName().replace('.', '/').concat("/");
+        return new String[] { BaseIntegrationTest.class.getName().replace('.', '/').concat("*.class"), pkg + "**/*" };
+    }
 }

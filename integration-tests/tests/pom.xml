@@ -218,6 +218,12 @@
         <!--<scope>compile</scope>-->
         <!--</dependency>-->
 
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-invoker-junit</artifactId>
+            <version>${exam.version}</version>
+        </dependency>
+
     </dependencies>
 
 

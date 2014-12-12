@@ -23,6 +23,8 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.gemini.blueprint.iandt.BaseIntegrationTest;
+import org.eclipse.gemini.blueprint.test.BlueprintContextBootstrap;
+import org.eclipse.gemini.blueprint.test.FilteringProbeBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.ops4j.pax.exam.*;
@@ -36,6 +38,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.eclipse.gemini.blueprint.io.OsgiBundleResourceLoader;
 import org.eclipse.gemini.blueprint.io.OsgiBundleResourcePatternResolver;
+import org.springframework.test.context.BootstrapWith;
 import org.springframework.util.ObjectUtils;
 
 import static org.eclipse.gemini.blueprint.test.BlueprintOptions.blueprintDefaults;
@@ -65,10 +68,10 @@ public abstract class BaseIoTest extends BaseIntegrationTest {
 	protected Bundle bundle;
 
 
-//	protected String[] getBundleContentPattern() {
-//		return ObjectUtils.addObjectToArray(super.getBundleContentPattern(),
-//			"org/eclipse/gemini/blueprint/iandt/io/BaseIoTest.class");
-//	}
+	protected String[] getBundleContentPattern() {
+		return ObjectUtils.addObjectToArray(super.getBundleContentPattern(),
+			"org/eclipse/gemini/blueprint/iandt/io/BaseIoTest.class");
+	}
 
 	@Before
 	public void onSetUp() throws Exception {
@@ -86,15 +89,23 @@ public abstract class BaseIoTest extends BaseIntegrationTest {
 		thisClass = null;
 	}
 
-//	protected String getManifestLocation() {
-//		// reuse the manifest from Fragment Io Tests
-//		return "org/eclipse/gemini/blueprint/iandt/io/FragmentIoTests.MF";
-//	}
+	protected String getManifestLocation() {
+		// reuse the manifest from Fragment Io Tests
+		return "org/eclipse/gemini/blueprint/iandt/io/FragmentIoTests.MF";
+	}
 
-	// todo: this is not nice.... (at least in my mind) and Customizer is not called anywhere.
 	@ProbeBuilder
 	public TestProbeBuilder customizeProbe(TestProbeBuilder builder) {
-		builder.setHeader(org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME, "org.eclipse.gemini.blueprint.iandt.io.functional.fragments");
+		FilteringProbeBuilder custom = new FilteringProbeBuilder(builder.getTempDir());
+		custom.addContentPattern(getBundleContentPattern());
+		custom.setManifestLocation(getManifestLocation());
+
+		custom.setHeader(org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME, "org.eclipse.gemini.blueprint.iandt.io.functional.fragments");
+		postProcessProbeCustomization(custom);
+		return custom;
+	}
+
+	protected TestProbeBuilder postProcessProbeCustomization(TestProbeBuilder builder) {
 		return builder;
 	}
 
