@@ -22,3 +22,4 @@ eclipse_config
 # etc
 dependency-reduced-pom.xml
 **/resources/git.properties
+/bin/
