@@ -32,8 +32,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Spring version -->
-        <spring.maven.artifact.version>4.1.6.RELEASE_1</spring.maven.artifact.version>
-        <spring.base.version>4.1.1</spring.base.version>
+        <spring.maven.artifact.version>4.3.1.RELEASE_1</spring.maven.artifact.version>
+        <spring.base.version>4.3.1</spring.base.version>
 
         <symName.prefix>org.eclipse.gemini.blueprint</symName.prefix>
         <spring.osgi.symbolic.name>${project.groupId}.${project.artifactId}</spring.osgi.symbolic.name>
@@ -55,7 +55,7 @@
         <!-- Knopflerfish -->
         <kf.ver>7.1.2</kf.ver>
         <!-- Felix 4.4.x supports OSGi R5 -->
-        <felix.ver>4.4.0</felix.ver>
+        <felix.ver>5.4.0</felix.ver>
 
         <!-- javadoc configuration -->
         <javadoc.loc>${basedir}/docs/src/javadoc</javadoc.loc>
@@ -279,7 +279,7 @@
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.junit</artifactId>
-                <version>4.11_2</version>
+                <version>4.12_1</version>
             </dependency>
 
             <dependency>
@@ -552,6 +552,16 @@
                 <configuration>
                     <properties>
                         <bundle.description>${project.description}</bundle.description>
+                        <spring.maven.artifact.version>${spring.maven.artifact.version}</spring.maven.artifact.version>
+                        <git.commit.id.describe>${git.commit.id.describe}</git.commit.id.describe>
+                        <spring.osgi.symbolic.name>${spring.osgi.symbolic.name}</spring.osgi.symbolic.name>
+                        <env.buildNumber>${env.buildNumber}</env.buildNumber>
+                        <spring.version.range>${spring.version.range}</spring.version.range>
+                        <logging.version.range>${logging.version.range}</logging.version.range>
+                        <env.buildPlan>${env.buildPlan}</env.buildPlan>
+                        <spring.version.range.nq>${spring.version.range.nq}</spring.version.range.nq>
+                        <gemini.blueprint.version.range>${gemini.blueprint.version.range}</gemini.blueprint.version.range>
+                        <gemini.blueprint.version.range.nq>${gemini.blueprint.version.range.nq}</gemini.blueprint.version.range.nq>
                     </properties>
                     <manifestTemplatePath>${basedir}/template.mf</manifestTemplatePath>
                     <enabled>${bundlor.enabled}</enabled>

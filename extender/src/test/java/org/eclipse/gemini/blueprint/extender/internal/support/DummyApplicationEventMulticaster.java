@@ -14,6 +14,7 @@
 
 package org.eclipse.gemini.blueprint.extender.internal.support;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationEventMulticaster;
@@ -26,6 +27,10 @@ public class DummyApplicationEventMulticaster implements ApplicationEventMultica
 	public void addApplicationListener(ApplicationListener arg0) {
 	}
 
+	public void multicastEvent(ApplicationEvent event, ResolvableType eventType) {
+		
+	}
+	
 	public void multicastEvent(ApplicationEvent arg0) {
 	}
 

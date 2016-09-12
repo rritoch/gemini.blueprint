@@ -107,4 +107,8 @@ public class ManagedServiceInstanceTrackerPostProcessor implements BeanFactoryAw
 	public void setUpdateMethod(String methodName) {
 		this.updateMethod = methodName;
 	}
+	
+	public boolean requiresDestruction(Object obj) {
+		return true;
+	}
 }
