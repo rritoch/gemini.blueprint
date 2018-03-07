@@ -21,7 +21,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
-import org.springframework.core.ConstantException;
+import org.springframework.core.Constants.ConstantException;
 import org.springframework.core.Constants;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;

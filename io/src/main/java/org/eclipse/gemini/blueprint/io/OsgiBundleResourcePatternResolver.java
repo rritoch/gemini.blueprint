@@ -566,7 +566,8 @@ public class OsgiBundleResourcePatternResolver extends PathMatchingResourcePatte
 		for (int i = 0; i < rootDirResources.length; i++) {
 			Resource rootDirResource = rootDirResources[i];
 			if (isJarResource(rootDirResource)) {
-				result.addAll(doFindPathMatchingJarResources(rootDirResource, subPattern));
+				
+				result.addAll(doFindPathMatchingJarResources(rootDirResource, rootDirResource.getURL(), subPattern));
 			} else {
 				result.addAll(doFindPathMatchingFileResources(rootDirResource, subPattern, searchType));
 			}

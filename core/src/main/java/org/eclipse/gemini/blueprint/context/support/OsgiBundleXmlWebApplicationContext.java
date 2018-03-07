@@ -16,6 +16,7 @@
 
 package org.eclipse.gemini.blueprint.context.support;
 
+import java.io.IOException;
 import java.util.Map;
 
 
@@ -25,7 +26,9 @@ import javax.servlet.ServletContext;
 import org.eclipse.gemini.blueprint.context.ConfigurableOsgiBundleApplicationContext;
 import org.eclipse.gemini.blueprint.io.OsgiBundleResourceLoader;
 import org.osgi.framework.BundleContext;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.ui.context.Theme;
@@ -36,9 +39,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextAwareProcessor;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
+
 
 /**
  * OSGi variant for {@link XmlWebApplicationContext}. The implementation
@@ -133,17 +138,17 @@ public class OsgiBundleXmlWebApplicationContext extends
                                         Assert.isInstanceOf(BundleContext.class, context);
                                         logger.debug("Using the bundle context located in the servlet context at "
                                                         + BUNDLE_CONTEXT_ATTRIBUTE);
-                                        System.out.println("Agh1");
                                         setBundleContext((BundleContext) context);
                                 }
+                                
                         }
 
+                        
                         // fall back to the parent
                         ApplicationContext parent = getParent();
 
                         if (parent instanceof ConfigurableOsgiBundleApplicationContext) {
                                 logger.debug("Using the application context parent's bundle context");
-                                System.out.println("Agh2");
                                 setBundleContext(((ConfigurableOsgiBundleApplicationContext) parent)
                                                 .getBundleContext());
                         }
@@ -292,5 +297,10 @@ public class OsgiBundleXmlWebApplicationContext extends
         public void setConfigLocation(String location) {
                 setConfigLocations(StringUtils.tokenizeToStringArray(location,
                                 CONFIG_LOCATION_DELIMITERS));
+        }
+                
+    	@Override
+    	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
+        	super.loadBeanDefinitions(beanFactory);
         }
 }
